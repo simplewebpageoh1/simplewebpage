@@ -1,0 +1,141 @@
+/* src/pages/Templates/Templates.module.scss */
+
+.page{padding-bottom:40px}
+.title{font-size:2rem;margin:0 0 10px}
+.subtitle{max-width:900px;opacity:.85;line-height:1.6;margin:0 0 18px}
+
+/* ✅ 섹션 배경(옅은 회색) */
+.sectionSoft{
+  background: rgba(0,0,0,0.035);
+  padding: 22px 18px;
+  margin: 18px 0;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.10);
+}
+.sectionSoftAlt{
+  background: rgba(0,0,0,0.055);
+  padding: 22px 18px;
+  margin: 18px 0;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+/* ✅ 섹션 타이틀 바(왼쪽 라인만) */
+.sectionHeader{
+  margin: 0 0 14px;
+  padding-left: 12px;
+  border-left: 4px solid var(--brand, #ff8a00);
+}
+.sectionTitle{margin:0 0 6px;font-size:1.35rem}
+.sectionSub{margin:0;opacity:.82;line-height:1.6;max-width:900px}
+
+/* ✅ divider (섹션 끝 구분선) */
+.sectionSoft::after, .sectionSoftAlt::after{
+  content:"";
+  display:block;
+  margin-top:18px;
+  height:1px;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.25) 0 12px, rgba(255,255,255,0) 12px 20px);
+  opacity:.55;
+  border-radius: var(--btn-radius);
+}
+
+/* ✅ 템플릿 카드 */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width: 900px){.grid{grid-template-columns:1fr}}
+.card{
+  display:flex;
+  flex-direction:column;
+  border: 1px solid #e6e6e6; /* 카드 구분 명확화 */
+  border-radius:18px;
+  padding:18px;
+  background:#ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04); /* 기본 그림자 */
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08); /* hover 시 강조 */
+}
+.cardTitle{margin:0 0 6px;font-size:1.25rem}
+.cardDesc{margin:0 0 14px;opacity:.85;line-height:1.6;min-height:3.2em}
+.cardActions{
+  margin-top:auto;
+  display:grid;
+  grid-template-columns: repeat(3, max-content);
+  gap:10px;
+  align-items:center;
+}
+.action{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  border-radius: var(--btn-radius);
+  text-decoration:none;
+  font-weight: var(--btn-font-weight);
+  border:1px solid rgba(0,0,0,.14);
+  background:rgba(0,0,0,.06);
+  color: inherit;
+  box-shadow: var(--btn-shadow);
+  transition: transform .12s ease, filter .12s ease, opacity .12s ease, background .12s ease;
+}
+.action:hover{filter:brightness(0.98);transform:translateY(-1px);text-decoration:none}
+.buyAction{
+  background: var(--brand);
+  color: var(--brand-text);
+  border:1px solid rgba(0,0,0,.12);
+}
+
+/* ✅ Other industry card */
+.moreCard{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;background:rgba(255,255,255,.02)}
+.pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,.12);
+  background: rgba(0,0,0,.04);
+  font-weight:700;
+  opacity:.95;
+}
+.moreActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+
+/* ✅ How it works */
+.howCard{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;background:rgba(255,255,255,.02)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.step{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px;background:rgba(0,0,0,.12)}
+.h3{margin:0 0 6px;font-size:1.05rem}
+.p{margin:0;opacity:.9;line-height:1.6}
+@media (max-width: 900px){.steps{grid-template-columns:1fr}}
+
+/* ✅ 모바일 패딩 */
+@media (max-width: 600px){
+  .sectionSoft,.sectionSoftAlt{padding:16px 12px;margin:14px 0;border-radius:16px}
+  .card{padding:14px;border-radius:16px}
+  .grid{gap:12px}
+}
+
+.buyAction:hover{filter: brightness(0.98); transform: translateY(-1px); text-decoration:none}
+
+
+@media (max-width: 420px){
+  .cardActions{
+  margin-top:auto;
+    grid-template-columns: 1fr 1fr;
+  }
+  .buyAction{
+    grid-column: 1 / -1;
+  }
+}
+
+.pill:hover{background: rgba(0,0,0,.06)}
+
+
+/* ✅ 고객용(최종) 미리보기 링크 */
+.clientGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.clientLink{display:block;padding:14px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.10);text-decoration:none;color:#111;background:#fff}
+.clientLink:hover{transform:translateY(-1px);filter:brightness(1.02)}
+@media (max-width:900px){.clientGrid{grid-template-columns:1fr}}

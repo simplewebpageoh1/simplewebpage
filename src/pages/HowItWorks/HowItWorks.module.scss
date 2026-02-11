@@ -1,0 +1,22 @@
+/* src/pages/HowItWorks/HowItWorks.module.scss */
+.page{padding:40px 0}
+.title{font-size:34px;margin:0 0 10px}
+.subtitle{color:rgba(0,0,0,0.65);margin:0 0 20px;max-width:760px}
+
+.card{background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:18px;margin:16px 0 22px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.step{background:rgba(0,0,0,0.03);border-radius:12px;padding:14px}
+.h2{font-size:18px;margin:0 0 6px}
+.p{margin:0;color:rgba(0,0,0,0.75);line-height:1.45}
+
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.panel{border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:16px;background:#fff}
+.actions{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.primary{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;background:#111;color:#fff;text-decoration:none}
+.secondary{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;border:1px solid rgba(0,0,0,0.18);color:#111;text-decoration:none;background:#fff}
+
+@media (max-width:900px){
+  .steps{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+  .title{font-size:28px}
+}

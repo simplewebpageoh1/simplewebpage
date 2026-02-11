@@ -1,0 +1,78 @@
+.page{padding:28px 0 50px}
+.title{font-size:2rem;margin:0 0 10px}
+.desc{max-width:900px;opacity:.85;line-height:1.6;margin:0 0 12px}
+
+.selected{border:1px solid var(--border, rgba(255,255,255,.12));border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.03);margin:12px 0 16px;line-height:1.6}
+.selectedLabel{margin:0 0 6px}
+.selectedHint{margin:0;opacity:.8}
+
+.form{max-width:900px}
+.label{display:block;margin:0 0 14px}
+.label input,.label textarea{
+  width:100%;
+  margin-top:6px;
+  padding:10px 12px;
+  border-radius: var(--btn-radius);
+  border:1px solid rgba(0,0,0,.15);
+  background:#fff !important;
+  color:#111 !important;
+}
+.label input::placeholder,.label textarea::placeholder{color:rgba(0,0,0,.45)}
+.hint{display:block;margin-top:6px;opacity:.75;line-height:1.4;font-size:0.9rem}
+.row2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media (max-width: 900px){.row2{grid-template-columns:1fr}}
+button{background: var(--brand);border:0;color: var(--brand-text);font-weight: var(--btn-font-weight);padding: var(--btn-padding-y) var(--btn-padding-x);border-radius: var(--btn-radius);cursor:pointer}
+button[disabled]{opacity:.6;cursor:not-allowed}
+.help{margin-top:16px;opacity:.9}
+.pdfLink{margin-left:8px;font-weight: var(--btn-font-weight);text-decoration:none;opacity:.9}
+.pdfLink:hover{opacity:1}
+
+/* ✅ Add-ons 선택 블록 */
+.addonsBlock{border:1px dashed rgba(0,0,0,.18);border-radius:16px;padding:12px 14px;background:#fff;margin:4px 0 14px}
+.addonsTitle{font-weight:800;margin:0 0 6px}
+.addonsHint{margin:0 0 10px;opacity:.8;line-height:1.5;font-size:0.95rem}
+.checkRow{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  margin:0 0 10px;
+  line-height:1.45;
+  padding:10px 12px;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:12px;
+  background:rgba(0,0,0,.02);
+}
+.checkRow input{margin-top:3px;flex:0 0 auto; width:auto;}
+.checkRow span{display:block;color:#111;opacity:.92; flex:1;}
+
+button{transition: transform .12s ease, filter .12s ease, opacity .12s ease}
+button:hover{filter: brightness(0.98); transform: translateY(-1px)}
+button:active{transform: translateY(0px); filter: brightness(0.97)}
+
+
+/* ✅ 스타일 선택 블록 */
+.themeBlock{
+  border:1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.6);
+  border-radius:16px;
+  padding:16px;
+  margin: 10px 0 6px;
+}
+.themeTitle{font-weight:900;margin-bottom:6px}
+.themeHint{margin:0 0 10px;opacity:.85;line-height:1.6}
+
+.radioGroup{
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:14px;
+  padding:12px;
+  background:#fff !important;
+}
+.radioTitle{font-weight:900;margin-bottom:8px}
+.radioRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid rgba(0,0,0,.06);
+}
+.radioRow:last-child{border-bottom:none}

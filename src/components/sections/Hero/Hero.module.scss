@@ -1,0 +1,26 @@
+/* Hero.module.scss */
+/* ✅ Hero 섹션 스타일 (Home 전용 톤: 검정 버튼) */
+
+.hero{padding: var(--space-7) 0;}
+.title{font-size:36px;margin-bottom: var(--space-3);}
+.subtitle{font-size:18px;color: var(--color-muted);margin-bottom: var(--space-5);}
+
+.actions{display:flex;gap: var(--space-3);flex-wrap: wrap;}
+
+.primaryBtn,.secondaryBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  border-radius: var(--btn-radius);
+  font-weight: var(--btn-font-weight);
+  text-decoration:none;
+  background:#111;
+  color:#fff;
+  border:1px solid rgba(0,0,0,.14);
+  box-shadow: var(--btn-shadow);
+  transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+}
+.primaryBtn:hover,.secondaryBtn:hover{filter: brightness(1.05); transform: translateY(-1px); text-decoration:none;}
+.primaryBtn:active,.secondaryBtn:active{transform: translateY(0px); filter: brightness(0.98);}

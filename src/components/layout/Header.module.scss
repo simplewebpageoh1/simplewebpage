@@ -1,0 +1,82 @@
+/* src/components/layout/Header.module.scss */
+/* ✅ 상단 헤더(네비게이션) 스타일 */
+
+.header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: 64px;
+}
+
+.brand {
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.link {
+  color: var(--color-text);
+}
+
+.cta {
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+}
+
+
+
+
+/* ✅ 메인(Home) 페이지에서만 Header Contact 버튼을 검정색으로 */
+:global(.isHome) .cta{
+  background:#111;
+  color:#fff;
+  border:1px solid rgba(0,0,0,.14);
+}
+:global(.isHome) .cta:hover{
+  filter: brightness(1.05);
+}
+
+
+/* ✅ Mobile header: brand on 1st row, nav( Home / Templates / Contact ) on 2nd row */
+@media (max-width: 520px){
+  .inner{
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px 16px;
+    gap: 10px;
+    justify-content: flex-start;
+  }
+  .brand{
+    width: 100%;
+    padding-left: 2px; /* 살짝 띄워서 화면 왼쪽에 붙지 않게 */
+  }
+  .nav{
+    width: 100%;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: nowrap;
+  }
+  .link{
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .cta{
+    font-size: 13px;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+}

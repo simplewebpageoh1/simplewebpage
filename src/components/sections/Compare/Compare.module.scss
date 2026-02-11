@@ -1,0 +1,35 @@
+/* Compare.module.scss */
+
+.compare {
+  padding: var(--space-7) 0;
+}
+
+.title {
+  font-size: 28px;
+  margin-bottom: var(--space-2);
+}
+
+.subtitle {
+  color: var(--color-muted);
+  margin-bottom: var(--space-5);
+}
+
+.box {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+}
+
+.note {
+  margin-top: var(--space-3);
+  color: var(--color-muted);
+}

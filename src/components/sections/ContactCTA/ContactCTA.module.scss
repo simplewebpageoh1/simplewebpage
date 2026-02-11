@@ -1,0 +1,21 @@
+/* ContactCTA.module.scss */
+
+.cta {
+  margin-top: var(--space-7); /* ✅ 위 섹션과 간격 강제 */
+  padding: var(--space-7) 0;
+  background: #111;
+  color: white;
+}
+
+.title {
+  font-size: 28px;
+  margin-bottom: var(--space-2);
+}
+
+.subtitle {
+  color: #ddd;
+  margin-bottom: var(--space-4);
+}
+
+.btn:hover{background: rgba(255,255,255,.08); transform: translateY(-1px); text-decoration:none}
+.btn:active{transform: translateY(0px); background: rgba(255,255,255,.06)}

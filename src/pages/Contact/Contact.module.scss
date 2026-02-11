@@ -1,0 +1,217 @@
+/* src/pages/Contact/Contact.module.scss */
+/* ✅ 공통 문의 페이지 스타일 */
+
+.page {
+  padding: var(--space-7) 0;
+}
+
+.title {
+  font-size: 32px;
+  margin-bottom: var(--space-2);
+}
+
+.desc {
+  color: var(--color-muted);
+  margin-bottom: var(--space-5);
+}
+
+.reassurance{
+  margin-top: -16px;
+  margin-bottom: var(--space-5);
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.form {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+}
+
+.label {
+  display: grid;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.hint {
+  font-weight: 400;
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.footer {
+  margin-top: var(--space-5);
+}
+
+
+.note{border:1px solid var(--border, rgba(255,255,255,.12));border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.03);margin:12px 0 18px;line-height:1.6}
+.pdfLink{margin-left:8px;font-weight:700;text-decoration:none;opacity:.9}
+.pdfLink:hover{opacity:1}
+
+
+.selected{border:1px solid var(--border, rgba(255,255,255,.12));border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.03);margin:12px 0 12px;line-height:1.6}
+.selectedLabel{margin:0 0 6px}
+.selectedHint{margin:0;opacity:.8}
+
+/* ✅ 선택 요약 카드 (Demo에서 선택값 자동 전달) */
+.selectionCard{
+  border:1px solid var(--color-border);
+  border-radius:16px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  padding:14px 14px;
+  margin: 12px 0 14px;
+}
+
+.selectionHeader{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.selectionTitle{
+  font-weight:800;
+  font-size:16px;
+}
+
+.selectionSub{
+  margin-top:4px;
+  font-size:13px;
+  color: var(--color-muted);
+  line-height:1.4;
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  height:24px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#111;
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.pillMuted{
+  display:inline-flex;
+  align-items:center;
+  height:24px;
+  padding:0 10px;
+  border-radius:999px;
+  background: rgba(0,0,0,.06);
+  color:#111;
+  border:1px solid rgba(0,0,0,.12);
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.selectionGrid{
+  display:grid;
+  gap:8px;
+}
+
+.selectionRow{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  border: 1px dashed rgba(0,0,0,.12);
+  border-radius:12px;
+  padding:10px 12px;
+  background: rgba(0,0,0,.02);
+}
+
+.selectionKey{
+  font-size:13px;
+  color: var(--color-muted);
+  font-weight:700;
+}
+
+.selectionVal{
+  font-size:13px;
+  font-weight:800;
+  text-align:right;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.selectSmall{
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.18);
+  background: #fff;
+}
+
+.inputSmall{
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.18);
+  background: #fff;
+  width: 260px;
+  max-width: 100%;
+}
+
+.mini{opacity:.8;font-weight:800}
+
+.swatch{
+  width:14px;
+  height:14px;
+  border-radius:4px;
+  border:1px solid rgba(0,0,0,.18);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+  flex: 0 0 auto;
+}
+
+.selectionNote{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,.12);
+  background: rgba(255, 205, 0, .08);
+  font-size:13px;
+}
+
+
+/* ✅ Mobile: selection row controls should not get clipped */
+@media (max-width: 520px){
+  .selectionRow{
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .selectionKey{
+    width: 100%;
+  }
+  .selectionVal{
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .selectSmall,
+  .inputSmall{
+    width: 100%;
+  }
+}
+
+
+/* ✅ 개인정보 안내/동의 박스 */
+.noticeBox{border:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.03);border-radius:12px;padding:12px;margin-top:6px}
+.noticeText{margin:0 0 10px;color:rgba(0,0,0,0.78);font-size:14px;line-height:1.4}
+.checkRow{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.35;color:rgba(0,0,0,0.85)}
+.checkRow input{margin-top:3px;flex:0 0 auto}
+.checkRow a{text-decoration:underline;color:inherit}
