@@ -24,7 +24,7 @@ export default function Compare({
           <ul>
             <li>A clean, modern one-page website</li>
             <li>No monthly website builder fees</li>
-            <li>A simple setup process (template + guide)</li>
+            <li>A simple setup process (intake + preview)</li>
             <li>Clear contact path for customers</li>
           </ul>
 
@@ -44,11 +44,11 @@ export default function Compare({
             </div>
 
             <div className={styles.box}>
-              <h3>Simple One-Page Templates</h3>
+              <h3>SimpleWebPage (Built for You)</h3>
               <ul>
-                <li>One-time price ($99 CAD)</li>
+                <li>One-time price (from $99 CAD)</li>
                 <li>Fast loading and mobile-friendly</li>
-                <li>Includes domain/hosting guide PDF</li>
+                <li>Includes domain & hosting guide PDF</li>
               </ul>
             </div>
           </div>
