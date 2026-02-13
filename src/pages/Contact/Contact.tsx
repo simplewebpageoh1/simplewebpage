@@ -69,6 +69,7 @@ export default function Contact() {
 
   // ✅ 어떤 데모에서 왔는지 query로 받기: /contact?template=roofing
   const params = new URLSearchParams(location.search);
+
   const from = params.get("from") ?? "";
   const templateFromQuery = params.get("template") ?? "";
 
@@ -89,11 +90,11 @@ export default function Contact() {
   const hasSelectionQuery = useMemo(() => {
     return Boolean(
       params.get("template") ||
-        params.get("plan") ||
-        params.get("color") ||
-        params.get("font") ||
-        params.get("customColor") ||
-        params.get("industry")
+      params.get("plan") ||
+      params.get("color") ||
+      params.get("font") ||
+      params.get("customColor") ||
+      params.get("industry"),
     );
   }, [location.search]);
 
@@ -137,7 +138,8 @@ export default function Contact() {
   const selectedTemplate = templateFromQuery || draft?.template || "";
   const selectedPlan = planFromQuery || draft?.plan || "";
   const selectedColorId = params.get("color") || draft?.colorId || "";
-  const selectedCustomColor = params.get("customColor") || draft?.customColor || "";
+  const selectedCustomColor =
+    params.get("customColor") || draft?.customColor || "";
   const selectedFontId = params.get("font") || draft?.fontId || "";
 
   // ✅ 업종 선택(템플릿 3종 외에도 선택 가능)
@@ -170,7 +172,8 @@ export default function Contact() {
   }, [industryTouched, industryFromQuery, selectedTemplate]);
 
   const industryLabel = useMemo(() => {
-    if (industryId === "other") return industryOther.trim() ? industryOther.trim() : "Other";
+    if (industryId === "other")
+      return industryOther.trim() ? industryOther.trim() : "Other";
     const found = INDUSTRY_OPTIONS.find((o) => o.id === industryId);
     return found ? found.label : industryId;
   }, [industryId, industryOther]);
@@ -180,10 +183,20 @@ export default function Contact() {
     if (industryLabel) parts.push(`Industry: ${industryLabel}`);
     if (selectedTemplate) parts.push(`Template: ${selectedTemplate}`);
     if (selectedPlan) parts.push(`Plan: ${selectedPlan}`);
-    if (selectedColorId) parts.push(`Color: ${selectedColorId}${selectedColorId === "custom" && selectedCustomColor ? ` (${selectedCustomColor})` : ""}`);
+    if (selectedColorId)
+      parts.push(
+        `Color: ${selectedColorId}${selectedColorId === "custom" && selectedCustomColor ? ` (${selectedCustomColor})` : ""}`,
+      );
     if (selectedFontId) parts.push(`Font: ${selectedFontId}`);
     return parts.join(" | ");
-  }, [industryLabel, selectedTemplate, selectedPlan, selectedColorId, selectedCustomColor, selectedFontId]);
+  }, [
+    industryLabel,
+    selectedTemplate,
+    selectedPlan,
+    selectedColorId,
+    selectedCustomColor,
+    selectedFontId,
+  ]);
 
   const planPrice = useMemo(() => {
     const p = (selectedPlan || "").toLowerCase();
@@ -194,13 +207,15 @@ export default function Contact() {
 
   const colorDisplay = useMemo(() => {
     if (!selectedColorId) return "";
-    if (selectedColorId === "custom" && selectedCustomColor) return `${selectedCustomColor}`;
+    if (selectedColorId === "custom" && selectedCustomColor)
+      return `${selectedCustomColor}`;
     return selectedColorId;
   }, [selectedColorId, selectedCustomColor]);
 
   const swatchColor = useMemo(() => {
     if (!selectedColorId) return "#111111";
-    if (selectedColorId === "custom" && selectedCustomColor) return selectedCustomColor;
+    if (selectedColorId === "custom" && selectedCustomColor)
+      return selectedCustomColor;
     return COLOR_PRESETS[selectedColorId] ?? "#111111";
   }, [selectedColorId, selectedCustomColor]);
 
@@ -241,7 +256,7 @@ export default function Contact() {
           fontId: selectedFontId,
         },
         null,
-        0
+        0,
       ),
     };
 
@@ -267,7 +282,14 @@ export default function Contact() {
         // ignore
       }
 
-      navigate(selectedTemplate ? `/thank-you?template=${selectedTemplate}` : "/thank-you");
+      const qs = new URLSearchParams();
+
+      if (selectedTemplate) qs.set("template", selectedTemplate);
+      if (selectedPlan) qs.set("plan", selectedPlan);
+
+      qs.set("from", "contact");
+
+      navigate(`/thank-you?${qs.toString()}`);
     } catch (err) {
       alert("Submission failed. Please try again in a moment.");
       console.error(err);
@@ -284,239 +306,269 @@ export default function Contact() {
         path="/contact"
       />
       <main className={styles.page}>
-      <div className="container">
-        <h1 className={styles.title}>Contact</h1>
-        <section className={styles.selectionCard} aria-label="Your selection">
-          <div className={styles.selectionHeader}>
-            <div>
-              <div className={styles.selectionTitle}>Your selection</div>
-              <div className={styles.selectionSub}>
-                If you came from a demo page, we’ll attach your selected options automatically.
-              </div>
-            </div>
-            {selectionSummary ? (
-              <span className={styles.pill}>Auto-filled</span>
-            ) : (
-              <span className={styles.pillMuted}>No selection</span>
-            )}
-          </div>
-
-          <div className={styles.selectionGrid}>
-            <div className={styles.selectionRow}>
-              <div className={styles.selectionKey}>Industry</div>
-              <div className={styles.selectionVal}>
-                <select
-                  className={styles.selectSmall}
-                  value={industryId}
-                  onChange={(e) => {
-                    const next = e.target.value as IndustryId;
-                    setIndustryTouched(true);
-                    setIndustryId(next);
-                    if (next !== "other") setIndustryOther("");
-                  }}
-                >
-                  {INDUSTRY_OPTIONS.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {industryId === "other" && (
-              <div className={styles.selectionRow}>
-                <div className={styles.selectionKey}>Other industry</div>
-                <div className={styles.selectionVal}>
-                  <input
-                    className={styles.inputSmall}
-                    value={industryOther}
-                    onChange={(e) => {
-                      setIndustryTouched(true);
-                      setIndustryOther(e.target.value);
-                    }}
-                    placeholder="e.g., plumbing, painting, roofing"
-                  />
+        <div className="container">
+          <h1 className={styles.title}>Contact</h1>
+          <section className={styles.selectionCard} aria-label="Your selection">
+            <div className={styles.selectionHeader}>
+              <div>
+                <div className={styles.selectionTitle}>Your selection</div>
+                <div className={styles.selectionSub}>
+                  If you came from a demo page, we’ll attach your selected
+                  options automatically.
                 </div>
               </div>
-            )}
-
-            <div className={styles.selectionRow}>
-              <div className={styles.selectionKey}>Template</div>
-              <div className={styles.selectionVal}>{selectedTemplate || "—"}</div>
+              {selectionSummary ? (
+                <span className={styles.pill}>Auto-filled</span>
+              ) : (
+                <span className={styles.pillMuted}>No selection</span>
+              )}
             </div>
 
-            <div className={styles.selectionRow}>
-              <div className={styles.selectionKey}>Plan</div>
-              <div className={styles.selectionVal}>
-                {selectedPlan ? (
-                  <>
-                    {selectedPlan}
-                    {planPrice ? <span className={styles.mini}> ({planPrice})</span> : null}
-                  </>
-                ) : (
-                  "—"
-                )}
+            <div className={styles.selectionGrid}>
+              <div className={styles.selectionRow}>
+                <div className={styles.selectionKey}>Industry</div>
+                <div className={styles.selectionVal}>
+                  <select
+                    className={styles.selectSmall}
+                    value={industryId}
+                    onChange={(e) => {
+                      const next = e.target.value as IndustryId;
+                      setIndustryTouched(true);
+                      setIndustryId(next);
+                      if (next !== "other") setIndustryOther("");
+                    }}
+                  >
+                    {INDUSTRY_OPTIONS.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
 
-            <div className={styles.selectionRow}>
-              <div className={styles.selectionKey}>Brand color</div>
-              <div className={styles.selectionVal}>
-                {colorDisplay ? (
-                  <>
-                    <span
-                      className={styles.swatch}
-                      style={{ background: swatchColor }}
-                      aria-hidden="true"
+              {industryId === "other" && (
+                <div className={styles.selectionRow}>
+                  <div className={styles.selectionKey}>Other industry</div>
+                  <div className={styles.selectionVal}>
+                    <input
+                      className={styles.inputSmall}
+                      value={industryOther}
+                      onChange={(e) => {
+                        setIndustryTouched(true);
+                        setIndustryOther(e.target.value);
+                      }}
+                      placeholder="e.g., plumbing, painting, roofing"
                     />
-                    <span>{colorDisplay}</span>
-                  </>
-                ) : (
-                  "—"
-                )}
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.selectionRow}>
+                <div className={styles.selectionKey}>Template</div>
+                <div className={styles.selectionVal}>
+                  {selectedTemplate || "—"}
+                </div>
+              </div>
+
+              <div className={styles.selectionRow}>
+                <div className={styles.selectionKey}>Plan</div>
+                <div className={styles.selectionVal}>
+                  {selectedPlan ? (
+                    <>
+                      {selectedPlan}
+                      {planPrice ? (
+                        <span className={styles.mini}> ({planPrice})</span>
+                      ) : null}
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.selectionRow}>
+                <div className={styles.selectionKey}>Brand color</div>
+                <div className={styles.selectionVal}>
+                  {colorDisplay ? (
+                    <>
+                      <span
+                        className={styles.swatch}
+                        style={{ background: swatchColor }}
+                        aria-hidden="true"
+                      />
+                      <span>{colorDisplay}</span>
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.selectionRow}>
+                <div className={styles.selectionKey}>Font</div>
+                <div className={styles.selectionVal}>
+                  {selectedFontId || "—"}
+                </div>
               </div>
             </div>
 
-            <div className={styles.selectionRow}>
-              <div className={styles.selectionKey}>Font</div>
-              <div className={styles.selectionVal}>{selectedFontId || "—"}</div>
-            </div>
+            {selectedPlan?.toLowerCase() === "basic" && (
+              <div className={styles.selectionNote}>
+                Custom color is a <strong>Plus</strong> feature.
+              </div>
+            )}
+          </section>
+
+          <p className={styles.desc}>
+            Tell us about your business. We’ll reply within 24 hours.
+          </p>
+          <p className={styles.reassurance}>
+            If you paid via <strong>Stripe</strong>, a receipt will be emailed
+            to you automatically.
+            <br />
+            After you submit this form, we’ll confirm your order by email and
+            start building your site.
+          </p>
+
+          <div className={styles.note}>
+            <p>
+              <strong>Plans:</strong> Basic (<strong>$99</strong>) vs Plus (
+              <strong>$129</strong> — Custom Color included)
+            </p>
+            <p>
+              Includes: one-page template setup + basic text replacement
+              (business name, service area, contact) + a domain/hosting guide
+              PDF.
+              <a
+                className={styles.pdfLink}
+                href="/Domain-Hosting-Guide.pdf"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {" "}
+                Open PDF
+              </a>
+            </p>
           </div>
 
-          {selectedPlan?.toLowerCase() === "basic" && (
-            <div className={styles.selectionNote}>
-              Custom color is a <strong>Plus</strong> feature.
-            </div>
-          )}
-        </section>
-
-        <p className={styles.desc}>Tell us about your business. We’ll reply within 24 hours.</p>
-        <p className={styles.reassurance}>
-          If you paid via <strong>Stripe</strong>, a receipt will be emailed to you automatically.
-          <br />
-          After you submit this form, we’ll confirm your order by email and start building your site.
-        </p>
-
-        <div className={styles.note}>
-          <p>
-            <strong>Plans:</strong> Basic (<strong>$99</strong>) vs Plus (<strong>$129</strong> — Custom Color included)
-          </p>
-          <p>
-            Includes: one-page template setup + basic text replacement (business name, service area, contact) + a domain/hosting guide PDF.
-            <a className={styles.pdfLink} href="/Domain-Hosting-Guide.pdf" target="_blank" rel="noreferrer"> Open PDF</a>
-          </p>
-        </div>
-
-
-        {/* ✅ Netlify가 폼을 인식하도록 속성은 그대로 유지 */}
-        <form
-          className={styles.form}
-          name="contact"
-          method="POST"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
-          onSubmit={handleSubmit}
-        >
-          {/* ✅ Netlify 인식용 hidden input (필수) */}
-          <input type="hidden" name="form-name" value="contact" />
-          {/* ✅ 스팸 방지용(권장) */}
-          <p style={{ display: "none" }}>
-            <label>
-              Don’t fill this out if you're human: <input name="bot-field" />
-            </label>
-          </p>
-          {/* ✅ 어떤 템플릿에서 왔는지 함께 저장 */}
-          <input type="hidden" name="industryId" value={industryId} />
-          <input type="hidden" name="industryOther" value={industryOther} />
-          <input type="hidden" name="industry" value={industryLabel} />
-          <input type="hidden" name="template" value={selectedTemplate} />
-          <input type="hidden" name="plan" value={selectedPlan} />
-          <input type="hidden" name="colorId" value={selectedColorId} />
-          <input type="hidden" name="customColor" value={selectedCustomColor} />
-          <input type="hidden" name="fontId" value={selectedFontId} />
-          <input type="hidden" name="selectionSummary" value={selectionSummary} />
-          <input
-            type="hidden"
-            name="selectionJson"
-            value={JSON.stringify({
-              industryId,
-              industryOther,
-              industry: industryLabel,
-              template: selectedTemplate,
-              plan: selectedPlan,
-              colorId: selectedColorId,
-              customColor: selectedCustomColor,
-              fontId: selectedFontId,
-            })}
-          />
-
-          <label className={styles.label}>
-            Name
-            <input
-              type="text"
-              name="name"
-              placeholder="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </label>
-
-          <label className={styles.label}>
-            Email
-            <input
-              type="email"
-              name="email"
-              placeholder="info@simplewebpageoh.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </label>
-
-          <label className={styles.label}>
-            Message
-            <textarea
-              name="message"
-              placeholder="What type of business do you have?"
-              rows={5}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              required
-            />
-          </label>
-
-          {/* ✅ 개인정보 안내(결제/문의 직전 불안감 감소) */}
-          <div className={styles.noticeBox}>
-            <p className={styles.noticeText}>
-              We collect your information solely to provide a quote and build your website. We do not sell or share your data.
+          {/* ✅ Netlify가 폼을 인식하도록 속성은 그대로 유지 */}
+          <form
+            className={styles.form}
+            name="contact"
+            method="POST"
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
+            onSubmit={handleSubmit}
+          >
+            {/* ✅ Netlify 인식용 hidden input (필수) */}
+            <input type="hidden" name="form-name" value="contact" />
+            {/* ✅ 스팸 방지용(권장) */}
+            <p style={{ display: "none" }}>
+              <label>
+                Don’t fill this out if you're human: <input name="bot-field" />
+              </label>
             </p>
-            <label className={styles.checkRow}>
+            {/* ✅ 어떤 템플릿에서 왔는지 함께 저장 */}
+            <input type="hidden" name="industryId" value={industryId} />
+            <input type="hidden" name="industryOther" value={industryOther} />
+            <input type="hidden" name="industry" value={industryLabel} />
+            <input type="hidden" name="template" value={selectedTemplate} />
+            <input type="hidden" name="plan" value={selectedPlan} />
+            <input type="hidden" name="colorId" value={selectedColorId} />
+            <input
+              type="hidden"
+              name="customColor"
+              value={selectedCustomColor}
+            />
+            <input type="hidden" name="fontId" value={selectedFontId} />
+            <input
+              type="hidden"
+              name="selectionSummary"
+              value={selectionSummary}
+            />
+            <input
+              type="hidden"
+              name="selectionJson"
+              value={JSON.stringify({
+                industryId,
+                industryOther,
+                industry: industryLabel,
+                template: selectedTemplate,
+                plan: selectedPlan,
+                colorId: selectedColorId,
+                customColor: selectedCustomColor,
+                fontId: selectedFontId,
+              })}
+            />
+
+            <label className={styles.label}>
+              Name
               <input
-                type="checkbox"
-                name="agree"
-                checked={agree}
-                onChange={(e) => setAgree(e.target.checked)}
+                type="text"
+                name="name"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
               />
-              <span>
-                I agree to the <Link to="/privacy">Privacy Policy</Link> and <Link to="/terms">Terms</Link>.
-              </span>
             </label>
+
+            <label className={styles.label}>
+              Email
+              <input
+                type="email"
+                name="email"
+                placeholder="info@simplewebpageoh.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </label>
+
+            <label className={styles.label}>
+              Message
+              <textarea
+                name="message"
+                placeholder="What type of business do you have?"
+                rows={5}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                required
+              />
+            </label>
+
+            {/* ✅ 개인정보 안내(결제/문의 직전 불안감 감소) */}
+            <div className={styles.noticeBox}>
+              <p className={styles.noticeText}>
+                We collect your information solely to provide a quote and build
+                your website. We do not sell or share your data.
+              </p>
+              <label className={styles.checkRow}>
+                <input
+                  type="checkbox"
+                  name="agree"
+                  checked={agree}
+                  onChange={(e) => setAgree(e.target.checked)}
+                  required
+                />
+                <span>
+                  I agree to the <Link to="/privacy">Privacy Policy</Link> and{" "}
+                  <Link to="/terms">Terms</Link>.
+                </span>
+              </label>
+            </div>
+
+            <button type="submit" disabled={submitting}>
+              {submitting ? "Sending..." : "Send"}
+            </button>
+          </form>
+
+          <div className={styles.footer}>
+            <Link to="/">← Back to Home</Link>
           </div>
-
-          <button type="submit" disabled={submitting}>
-            {submitting ? "Sending..." : "Send"}
-          </button>
-
-        </form>
-
-        <div className={styles.footer}>
-          <Link to="/">← Back to Home</Link>
         </div>
-      </div>
-    </main>
+      </main>
     </>
   );
 }

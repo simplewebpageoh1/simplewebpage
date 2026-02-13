@@ -10,19 +10,16 @@ import { trackEvent } from "../../../utils/analytics";
 export default function Pricing() {
   // ✅ Stripe 결제 링크(선택)
   // - .env에 VITE_STRIPE_PAYMENT_LINK_BASIC(또는 구버전 VITE_STRIPE_PAYMENT_LINK)를 넣으면
-  //   Buy 버튼이 Stripe 결제로 연결됩니다.
-  // - 없으면 기본적으로 /contact로 이동(테스트/개발 단계)
-  const stripeBasic =
-    (import.meta.env.VITE_STRIPE_PAYMENT_LINK_BASIC as string | undefined) ??
-    (import.meta.env.VITE_STRIPE_PAYMENT_LINK as string | undefined);
-  const stripePlus = import.meta.env.VITE_STRIPE_PAYMENT_LINK_PLUS as string | undefined;
+  // ✅ Buy 버튼은 항상 Contact로 이동합니다.
+  // 결제(Stripe)는 Contact 제출 후 Thank You 페이지에서 진행합니다.
 
   return (
     <section className={styles.pricing}>
       <div className="container">
         <h2 className={styles.title}>Pricing</h2>
         <p className={styles.subtitle}>
-          One-time price for a professional one-page website. No monthly website builder fees.
+          One-time price for a professional one-page website. No monthly website
+          builder fees.
         </p>
 
         <div className={styles.grid}>
@@ -41,42 +38,48 @@ export default function Pricing() {
             </ul>
 
             <p className={styles.note} style={{ marginTop: 10 }}>
-              <strong>Not included:</strong> Layout changes, logo design, and full copywriting.
+              <strong>Not included:</strong> Layout changes, logo design, and
+              full copywriting.
             </p>
 
             <div className={styles.btnRow}>
-              <Link to="/templates" className={styles.primaryBtn} onClick={() => trackEvent("cta_view_templates", { location: "pricing", plan: "basic" })}>
+              <Link
+                to="/templates"
+                className={styles.primaryBtn}
+                onClick={() =>
+                  trackEvent("cta_view_templates", {
+                    location: "pricing",
+                    plan: "basic",
+                  })
+                }
+              >
                 Preview Templates
               </Link>
-              {stripeBasic ? (
-                <a href={stripeBasic} className={styles.secondaryBtn} onClick={() => trackEvent("cta_buy", { location: "pricing", plan: "basic", method: "stripe_link" })}>
-                  Buy Basic
-                </a>
-              ) : (
-                <Link
-                  to="/contact?from=pricing&plan=basic"
-                  className={styles.secondaryBtn}
-                  onClick={() => {
-                    // ✅ Pricing에서 Buy를 누르면 과거 데모 선택값이 섞이지 않도록 초기화
-                    try {
-                      localStorage.removeItem("demoOrderDraft:v1");
-                      sessionStorage.removeItem("orderFlow:fromDemo");
-                    } catch {
-                      // ignore
-                    }
-                    trackEvent("cta_buy", { location: "pricing", plan: "basic", method: "contact" });
-                  }}
-                >
-                  Buy Basic
-                </Link>
-              )}
+              <Link
+                to="/contact?from=pricing&plan=basic"
+                className={styles.secondaryBtn}
+                onClick={() => {
+                  try {
+                    localStorage.removeItem("demoOrderDraft:v1");
+                    sessionStorage.removeItem("orderFlow:fromDemo");
+                  } catch {}
+                  trackEvent("cta_buy", {
+                    location: "pricing",
+                    plan: "basic",
+                    method: "contact",
+                  });
+                }}
+              >
+                Buy Basic
+              </Link>
             </div>
 
             {/* ✅ 오해 방지: 기본 포함/미포함 범위 명확히 */}
             <p className={styles.finePrint}>
               Custom brand color is a Plus feature.
               <br />
-              Optional add-ons (domain connection/copy refinement) are available.
+              Optional add-ons (domain connection/copy refinement) are
+              available.
             </p>
           </div>
 
@@ -90,43 +93,51 @@ export default function Pricing() {
               <li>
                 <strong>Custom brand color</strong>
               </li>
-              <li>Match your website color to your logo, truck, or business cards</li>
+              <li>
+                Match your website color to your logo, truck, or business cards
+              </li>
             </ul>
 
             <p className={styles.note} style={{ marginTop: 10 }}>
-              <strong>Not included:</strong> Layout changes, logo design, and full copywriting.
+              <strong>Not included:</strong> Layout changes, logo design, and
+              full copywriting.
             </p>
 
             <div className={styles.btnRow}>
-              <Link to="/templates" className={styles.primaryBtn} onClick={() => trackEvent("cta_view_templates", { location: "pricing", plan: "plus" })}>
+              <Link
+                to="/templates"
+                className={styles.primaryBtn}
+                onClick={() =>
+                  trackEvent("cta_view_templates", {
+                    location: "pricing",
+                    plan: "plus",
+                  })
+                }
+              >
                 Preview Templates
               </Link>
-              {stripePlus ? (
-                <a href={stripePlus} className={styles.secondaryBtn} onClick={() => trackEvent("cta_buy", { location: "pricing", plan: "plus", method: "stripe_link" })}>
-                  Buy Plus
-                </a>
-              ) : (
-                <Link
-                  to="/contact?from=pricing&plan=plus"
-                  className={styles.secondaryBtn}
-                  onClick={() => {
-                    try {
-                      localStorage.removeItem("demoOrderDraft:v1");
-                      sessionStorage.removeItem("orderFlow:fromDemo");
-                    } catch {
-                      // ignore
-                    }
-                    trackEvent("cta_buy", { location: "pricing", plan: "plus", method: "contact" });
-                  }}
-                >
-                  Buy Plus
-                </Link>
-              )}
+              <Link
+                to="/contact?from=pricing&plan=plus"
+                className={styles.secondaryBtn}
+                onClick={() => {
+                  try {
+                    localStorage.removeItem("demoOrderDraft:v1");
+                    sessionStorage.removeItem("orderFlow:fromDemo");
+                  } catch {}
+                  trackEvent("cta_buy", {
+                    location: "pricing",
+                    plan: "plus",
+                    method: "contact",
+                  });
+                }}
+              >
+                Buy Plus
+              </Link>
             </div>
 
             <p className={styles.finePrint}>
-              Perfect for matching your existing business cards or signage. Includes a one-on-one
-              color consultation via email.
+              Perfect for matching your existing business cards or signage.
+              Includes a one-on-one color consultation via email.
             </p>
           </div>
         </div>
@@ -139,7 +150,8 @@ export default function Pricing() {
               <li>
                 <strong>Google Business Profile setup (+$79)</strong>
                 <br />
-                Profile setup and basic optimization. Verification by owner required.
+                Profile setup and basic optimization. Verification by owner
+                required.
               </li>
               <li>
                 <strong>Review request message setup (+$39)</strong>
@@ -150,7 +162,9 @@ export default function Pricing() {
               <li>Domain connection — done for you (+$49)</li>
               <li>Additional revisions / small changes (+$39)</li>
             </ul>
-            <p className={styles.stripeNote}>Secure checkout powered by Stripe. Credit cards accepted.</p>
+            <p className={styles.stripeNote}>
+              Secure checkout powered by Stripe. Credit cards accepted.
+            </p>
           </div>
 
           <div className={styles.commonCard}>
@@ -158,33 +172,47 @@ export default function Pricing() {
 
             <details className={styles.faqItem}>
               <summary>How long does setup take?</summary>
-              <p>Most websites are ready within 24–48 hours after we receive your intake form.</p>
+              <p>
+                Most websites are ready within 24–48 hours after we receive your
+                intake form.
+              </p>
             </details>
 
             <details className={styles.faqItem}>
               <summary>Do I need technical skills?</summary>
-              <p>No. We build and publish your website for you. You only provide your business details.</p>
+              <p>
+                No. We build and publish your website for you. You only provide
+                your business details.
+              </p>
             </details>
 
             <details className={styles.faqItem}>
               <summary>What is not included?</summary>
               <p>
-                Major layout changes, logo design, and advanced custom features are not included in Basic or Plus plans.
+                Major layout changes, logo design, and advanced custom features
+                are not included in Basic or Plus plans.
               </p>
             </details>
 
             <details className={styles.faqItem}>
               <summary>Can you connect my domain?</summary>
-              <p>Yes. You can follow our guide, or we can handle it for you for +$49.</p>
+              <p>
+                Yes. You can follow our guide, or we can handle it for you for
+                +$49.
+              </p>
             </details>
 
             <details className={styles.faqItem}>
               <summary>Is this good for online stores?</summary>
-              <p>No. This service is designed for simple service businesses that want a clean, fast one-page site.</p>
+              <p>
+                No. This service is designed for simple service businesses that
+                want a clean, fast one-page site.
+              </p>
             </details>
 
             <p className={styles.note} style={{ marginTop: 12 }}>
-              Tip: Preview a demo first. Setup starts immediately after checkout.
+              Tip: Preview a demo first. Setup starts immediately after
+              checkout.
             </p>
           </div>
         </div>

@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="SimpleWebPage | One-page websites for local businesses in Canada"
+        title="Professional Website Built for You in 48 Hours — Just $99"
         description="Simple one-page websites for local service businesses in Canada. One-time payment. No subscriptions. Live in 24–48 hours."
         path="/"
       />
@@ -56,11 +56,13 @@ Just send us your details, and we’ll handle the build and publishing for you.`
           },
           {
             title: "1 Round of Small Text Edits",
-            description: "Includes one revision for minor text updates before final delivery.",
+            description:
+              "Includes one revision for minor text updates before final delivery.",
           },
           {
             title: "SEO Basics Included",
-            description: "Title and description setup for better visibility on Google.",
+            description:
+              "Title and description setup for better visibility on Google.",
           },
           {
             title: "You Own the Site",
