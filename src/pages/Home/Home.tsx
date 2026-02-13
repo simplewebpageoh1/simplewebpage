@@ -26,46 +26,34 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="Professional Website Built for You in 48 Hours — Just $99"
+        title="SimpleWebPage | One-page websites for local businesses in Canada"
         description="Simple one-page websites for local service businesses in Canada. One-time payment. No subscriptions. Live in 24–48 hours."
         path="/"
       />
       <Hero
-  title="Professional Website Built for You in 48 Hours — Just $99"
-  subtitle={`No tech stress. No monthly fees.
-Send your details — we handle the build and publishing.`}
-  primaryCtaText="View Templates"
-  primaryCtaLink="/templates"
-  secondaryCtaText="Get Started"
-  secondaryCtaLink="/contact?from=nav"
-/>
-
+        title="We build and get your website live — you don’t touch tech"
+        subtitle="A simple one-page website for local service businesses in Canada. One-time payment. No subscriptions. Live in 24–48 hours."
+        primaryCtaText="View Templates"
+        primaryCtaLink="/templates"
+        secondaryCtaText="Get Started"
+        // ✅ Home에서 바로 Contact로 갈 때는 '새 문의'로 처리
+        secondaryCtaLink="/contact?from=nav"
+      />
 
       <Services
-        heading="What’s Included"
+        heading="What You Get"
         items={[
           {
-            title: "Template-based website build",
-            description:
-              "We build your site using our optimized one-page layout. Clean and mobile-friendly.",
+            title: "One-page website template",
+            description: "A clean, mobile-friendly layout that looks professional.",
           },
           {
-            title: "Fast setup process",
-            description:
-              "After checkout, complete a short intake form. We generate your content and send a preview link.",
+            title: "No monthly builder fees",
+            description: "Host on Netlify and only pay for your domain (yearly). You own the site.",
           },
           {
-            title: "1 round of small text edits",
-            description: "Includes one revision for minor text updates before final delivery.",
-          },
-          {
-            title: "SEO basics included",
-            description: "Title and description setup to improve visibility on Google.",
-          },
-          {
-            title: "You own the site",
-            description:
-              "Stop paying monthly rent for your website. No builder fees — you only pay for your domain.",
+            title: "Simple setup process",
+            description: "After purchase, submit your details using the setup form and get a preview link.",
           },
         ]}
       />
@@ -76,7 +64,7 @@ Send your details — we handle the build and publishing.`}
 
       <ContactCTA
         title="Ready to launch a simple one-page website?"
-        subtitle="Pick a template, preview it, and launch fast — starting at $99 CAD."
+        subtitle="Pick a template, preview it, and launch fast — Basic $99 or Plus $129 (Custom Color included)."
         ctaLink="/contact?from=nav"
       />
     </>

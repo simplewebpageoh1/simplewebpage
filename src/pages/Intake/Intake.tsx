@@ -48,6 +48,8 @@ export default function Intake() {
   const [addonCopywriting, setAddonCopywriting] = useState(false);
   const [addonDomainConnection, setAddonDomainConnection] = useState(false);
   const [addonExtraRevisions, setAddonExtraRevisions] = useState(false);
+  const [addonGoogleBusiness, setAddonGoogleBusiness] = useState(false);
+  const [addonReviewRequest, setAddonReviewRequest] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -74,6 +76,8 @@ export default function Intake() {
       addonCopywriting: addonCopywriting ? "yes" : "no",
       addonDomainConnection: addonDomainConnection ? "yes" : "no",
       addonExtraRevisions: addonExtraRevisions ? "yes" : "no",
+      addonGoogleBusiness: addonGoogleBusiness ? "yes" : "no",
+      addonReviewRequest: addonReviewRequest ? "yes" : "no",
     };
 
     try {
@@ -108,7 +112,7 @@ export default function Intake() {
           <p className={styles.desc}>
             Please submit your business details. We use this to customize your one-page template.
             <br />
-            <strong>Typical turnaround:</strong> review within 24 hours → deployed and live within 24–48 hours.
+            <strong>Typical turnaround:</strong> review within 24 hours → go live within 24–48 hours.
           </p>
 
         <div className={styles.selected}>
@@ -232,6 +236,30 @@ export default function Intake() {
               />
               <span>Additional revisions or small custom changes (+$39)</span>
             </label>
+
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                name="addonGoogleBusiness"
+                checked={addonGoogleBusiness}
+                onChange={(e) => setAddonGoogleBusiness(e.target.checked)}
+              />
+              <span>
+                Google Business Profile setup (+$79) — profile setup + basic optimization
+                <br />
+                <strong>Verification is required by the business owner</strong>.
+              </span>
+            </label>
+
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                name="addonReviewRequest"
+                checked={addonReviewRequest}
+                onChange={(e) => setAddonReviewRequest(e.target.checked)}
+              />
+              <span>Review request message setup (+$39) — simple message template to collect more Google reviews</span>
+            </label>
           </div>
 
           <label className={styles.label}>
@@ -272,7 +300,7 @@ export default function Intake() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              placeholder="Any extra requests or notes. Small fixes are included after deployment; additional updates are available for a flat fee ($39)."
+              placeholder="Any extra requests or notes. Small fixes are included after go-live; additional updates are available for a flat fee ($39)."
             />
           </label>
 
@@ -287,7 +315,7 @@ export default function Intake() {
             <a className={styles.pdfLink} href="/Domain-Hosting-Guide.pdf" target="_blank" rel="noreferrer"> Domain & Hosting Guide (PDF)</a>
           </p>
           <p style={{ marginTop: 10, opacity: 0.85 }}>
-            Small fixes are included after deployment. Additional updates are available for a flat fee (+$39).
+            Small fixes are included after go-live. Additional updates are available for a flat fee (+$39).
           </p>
         </div>
       </div>

@@ -4,6 +4,7 @@
 // - 다음 단계(Setup Form 링크)를 함께 제공해서 운영 효율을 높인다.
 
 import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Seo from "../../components/seo/Seo";
 
 export default function ThankYou() {
@@ -13,17 +14,31 @@ export default function ThankYou() {
   // ✅ 가능하면 template 값을 유지해서 Setup Form으로 넘긴다
   const template = params.get("template") ?? "";
   const paid = params.get("paid") ?? ""; // optional flag
+  const source = params.get("source") ?? ""; // optional flag (e.g., source=stripe)
 
-  const intakeUrl = template ? `/intake?template=${template}` : "/intake";
+  const baseIntakeUrl = template ? `/intake?template=${template}` : "/intake";
+  const intakeUrl = source
+    ? `${baseIntakeUrl}${baseIntakeUrl.includes("?") ? "&" : "?"}source=${encodeURIComponent(source)}`
+    : baseIntakeUrl;
 
-  const headline = paid === "1" ? "Order confirmed 🎉" : "Message received ✅";
+  const isPaid = paid === "1" || source === "stripe";
 
-  const pageTitle = paid === "1" ? "Order Confirmed | SimpleWebPage" : "Thank You | SimpleWebPage";
+  // ✅ Stripe 결제 후에는(redirect URL에 ?paid=1 또는 ?source=stripe를 포함하면)
+  // 자동으로 Intake 폼으로 안내해 흐름을 끊지 않는다.
+  useEffect(() => {
+    if (!isPaid) return;
+    const t = setTimeout(() => {
+      window.location.href = intakeUrl;
+    }, 2500);
+    return () => clearTimeout(t);
+  }, [isPaid, intakeUrl]);
 
-  const intro =
-    paid === "1"
-      ? "Check your email for a payment receipt. Next, please fill out the setup form below to start building your site."
-      : "Thanks — we received your message. If you already paid via Stripe, check your email for a receipt. Next, please fill out the setup form below to start building your site.";
+  const headline = isPaid ? "Order confirmed 🎉" : "Message received ✅";
+  const pageTitle = isPaid ? "Order Confirmed | SimpleWebPage" : "Thank You | SimpleWebPage";
+
+  const intro = isPaid
+    ? "Check your email for a payment receipt. Next, please fill out the setup form below to start building your site."
+    : "Thanks — we received your message. If you already paid via Stripe, check your email for a receipt. Next, please fill out the setup form below to start building your site.";
 
   return (
     <>
@@ -41,7 +56,7 @@ export default function ThankYou() {
           <strong>What happens next?</strong>
           <ul style={{ margin: "8px 0 0 18px" }}>
             <li>We’ll review your information within <strong>24 hours</strong>.</li>
-            <li>Your site will be <strong>deployed and live within 24–48 hours</strong> after review.</li>
+            <li>Your site will <strong>go live within 24–48 hours</strong> after review.</li>
             <li>You’ll receive an email once your site is live.</li>
           </ul>
           <div style={{ marginTop: 8, opacity: 0.9 }}>

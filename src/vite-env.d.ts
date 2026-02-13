@@ -8,6 +8,7 @@ interface ImportMetaEnv {
   // Backwards compatibility
   readonly VITE_STRIPE_PAYMENT_LINK?: string;
   readonly VITE_GA4_ID?: string;
+  readonly VITE_SITE_URL?: string;
 }
 
 interface ImportMeta {
