@@ -22,7 +22,7 @@ export default function Pricing() {
       <div className="container">
         <h2 className={styles.title}>Pricing</h2>
         <p className={styles.subtitle}>
-          One-time price for a simple one-page website template. No monthly website builder fees.
+          One-time price for a professional one-page website. No monthly website builder fees.
         </p>
 
         <div className={styles.grid}>
@@ -32,13 +32,17 @@ export default function Pricing() {
             <div className={styles.price}>$99 CAD</div>
 
             <ul className={styles.list}>
-              <li>One-page layout (single scroll)</li>
-              <li>Mobile-friendly</li>
-              <li>Choose a preset color &amp; font</li>
-              <li>SEO title & description included</li>
-              <li>Domain & hosting guide PDF</li>
-              <li>Simple setup form (post-purchase)</li>
+              <li>One-page website built using our template system</li>
+              <li>Clean, mobile-friendly design</li>
+              <li>SEO title &amp; description setup</li>
+              <li>Netlify preview link</li>
+              <li>1 round of small text edits</li>
+              <li>Domain &amp; hosting guide PDF</li>
             </ul>
+
+            <p className={styles.note} style={{ marginTop: 10 }}>
+              <strong>Not included:</strong> Layout changes, logo design, and full copywriting.
+            </p>
 
             <div className={styles.btnRow}>
               <Link to="/templates" className={styles.primaryBtn} onClick={() => trackEvent("cta_view_templates", { location: "pricing", plan: "basic" })}>
@@ -82,18 +86,16 @@ export default function Pricing() {
             <div className={styles.price}>$129 CAD</div>
 
             <ul className={styles.list}>
-              {/* ✅ Basic의 주요 기능도 Plus에 명시(리스트 길이/가치 비교가 직관적) */}
-              <li>One-page layout (single scroll)</li>
-              <li>Mobile-friendly</li>
-              <li>Choose a preset color &amp; font</li>
-              <li>SEO title &amp; description included</li>
-              <li>Domain &amp; hosting guide PDF</li>
-              <li>Simple setup form (post-purchase)</li>
+              <li>Everything in Basic, plus:</li>
               <li>
-                <strong>Custom brand color</strong> (pick your own)
+                <strong>Custom brand color</strong>
               </li>
-              <li>Better brand match for ads / business cards</li>
+              <li>Match your website color to your logo, truck, or business cards</li>
             </ul>
+
+            <p className={styles.note} style={{ marginTop: 10 }}>
+              <strong>Not included:</strong> Layout changes, logo design, and full copywriting.
+            </p>
 
             <div className={styles.btnRow}>
               <Link to="/templates" className={styles.primaryBtn} onClick={() => trackEvent("cta_view_templates", { location: "pricing", plan: "plus" })}>
@@ -134,6 +136,16 @@ export default function Pricing() {
           <div className={styles.commonCard}>
             <div className={styles.commonTitle}>Optional add-ons</div>
             <ul className={styles.commonList}>
+              <li>
+                <strong>Google Business Profile setup (+$79)</strong>
+                <br />
+                Profile setup and basic optimization. Verification by owner required.
+              </li>
+              <li>
+                <strong>Review request message setup (+$39)</strong>
+                <br />
+                Simple message template to help you collect more Google reviews.
+              </li>
               <li>Copy refinement (+$49)</li>
               <li>Domain connection — done for you (+$49)</li>
               <li>Additional revisions / small changes (+$39)</li>
@@ -146,21 +158,29 @@ export default function Pricing() {
 
             <details className={styles.faqItem}>
               <summary>How long does setup take?</summary>
-              <p>Most sites are ready within 48 hours after you submit the setup form.</p>
+              <p>Most websites are ready within 24–48 hours after we receive your intake form.</p>
             </details>
 
             <details className={styles.faqItem}>
-              <summary>Do you offer refunds?</summary>
+              <summary>Do I need technical skills?</summary>
+              <p>No. We build and publish your website for you. You only provide your business details.</p>
+            </details>
+
+            <details className={styles.faqItem}>
+              <summary>What is not included?</summary>
               <p>
-                Refunds are available if work has not started. See our <a href="/refund">Refund Policy</a>.
+                Major layout changes, logo design, and advanced custom features are not included in Basic or Plus plans.
               </p>
             </details>
 
             <details className={styles.faqItem}>
               <summary>Can you connect my domain?</summary>
-              <p>
-                Yes — domain connection is available as an optional add-on (+$49), or you can follow the included guide.
-              </p>
+              <p>Yes. You can follow our guide, or we can handle it for you for +$49.</p>
+            </details>
+
+            <details className={styles.faqItem}>
+              <summary>Is this good for online stores?</summary>
+              <p>No. This service is designed for simple service businesses that want a clean, fast one-page site.</p>
             </details>
 
             <p className={styles.note} style={{ marginTop: 12 }}>

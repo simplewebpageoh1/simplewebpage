@@ -31,8 +31,9 @@ export default function Home() {
         path="/"
       />
       <Hero
-        title="We build and get your website live — you don’t touch tech"
-        subtitle="A simple one-page website for local service businesses in Canada. One-time payment. No subscriptions. Live in 24–48 hours."
+        title="Professional Website Built for You in 48 Hours — Just $99"
+        subtitle={`No tech stress, no monthly fees.
+Just send us your details, and we’ll handle the build and publishing for you.`}
         primaryCtaText="View Templates"
         primaryCtaLink="/templates"
         secondaryCtaText="Get Started"
@@ -41,19 +42,30 @@ export default function Home() {
       />
 
       <Services
-        heading="What You Get"
+        heading="What’s Included"
         items={[
           {
-            title: "One-page website template",
-            description: "A clean, mobile-friendly layout that looks professional.",
+            title: "Template-Based Website Build",
+            description:
+              "We build your website using our optimized one-page layout. Clean, mobile-friendly, and designed for service businesses.",
           },
           {
-            title: "No monthly builder fees",
-            description: "Host on Netlify and only pay for your domain (yearly). You own the site.",
+            title: "Fast Setup Process",
+            description:
+              "After checkout, complete a short intake form. We generate and structure your content, then send you a preview link.",
           },
           {
-            title: "Simple setup process",
-            description: "After purchase, submit your details using the setup form and get a preview link.",
+            title: "1 Round of Small Text Edits",
+            description: "Includes one revision for minor text updates before final delivery.",
+          },
+          {
+            title: "SEO Basics Included",
+            description: "Title and description setup for better visibility on Google.",
+          },
+          {
+            title: "You Own the Site",
+            description:
+              "Stop paying monthly rent for your website. No monthly builder fees. Host on Netlify and pay only for your domain.",
           },
         ]}
       />
