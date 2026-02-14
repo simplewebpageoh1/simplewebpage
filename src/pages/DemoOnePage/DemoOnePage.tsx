@@ -94,12 +94,7 @@ export default function DemoOnePage() {
 
   const d = page.demo;
 
-  // ✅ Stripe 결제 링크 (있으면 바로 구매)
-  // ✅ Stripe payment links (optional)
-  // - If set, Buy will go to Stripe.
   // - If not set, Buy will go to /contact with selected options.
-  const stripeLinkBasic = import.meta.env.VITE_STRIPE_PAYMENT_LINK_BASIC as string | undefined;
-  const stripeLinkPlus = import.meta.env.VITE_STRIPE_PAYMENT_LINK_PLUS as string | undefined;
 
   // ✅ localStorage 값을 "처음 렌더"부터 반영하기 위해 lazy init 사용
   const [planId, setPlanId] = useState<PlanId>(() => safeLoad()?.planId ?? "basic");
@@ -177,14 +172,7 @@ export default function DemoOnePage() {
     safeSave({ planId, colorId, customColor, fontId });
   }, [planId, colorId, customColor, fontId]);
 
-  const stripeLink = planId === "plus" ? stripeLinkPlus : stripeLinkBasic;
 
-  const checkoutHref = useMemo(() => {
-    const params = new URLSearchParams();
-    params.set("template", page.slug);
-    params.set("plan", planId);
-    return `/checkout?${params.toString()}`;
-  }, [page.slug, planId]);
 
   const contactHref = (() => {
     const params = new URLSearchParams();
@@ -288,15 +276,9 @@ export default function DemoOnePage() {
               {controlsOpen ? "Hide options" : "Customize"}
             </button>
 
-            {stripeLink ? (
-              <Link className={`${styles.buy} ${styles.topBuy}`} to={checkoutHref} onClick={persistOrderDraft}>
+            <Link className={`${styles.buy} ${styles.topBuy}`} to={contactHref} onClick={persistOrderDraft}>
                 Buy (${price} CAD)
               </Link>
-            ) : (
-              <a className={`${styles.buy} ${styles.topBuy}`} href={contactHref} onClick={persistOrderDraft}>
-                Buy (${price} CAD)
-              </a>
-            )}
           </div>
         </div>
 
@@ -600,15 +582,9 @@ export default function DemoOnePage() {
                         Want this website for your business? One-time price: <strong>${price} CAD</strong>.
                       </div>
 
-                      {stripeLink ? (
-                        <Link className={styles.buy2} to={checkoutHref} onClick={persistOrderDraft}>
-                          Buy / Get Started
-                        </Link>
-                      ) : (
-                        <a className={styles.buy2} href={contactHref} onClick={persistOrderDraft}>
-                          Buy / Get Started
-                        </a>
-                      )}
+                      <Link className={styles.buy2} to={contactHref} onClick={persistOrderDraft}>
+                        Buy / Get Started
+                      </Link>
                     </div>
                   </div>
                 </section>
@@ -639,15 +615,9 @@ export default function DemoOnePage() {
       {/* ✅ Mobile Sticky Bottom Buy Bar (<=640px) */}
       <div className={styles.mobileBuyBar} aria-hidden={!isMobileUi}>
         <div className={styles.mobileBuyInner}>
-          {stripeLink ? (
-            <Link className={styles.mobileBuyBtn} to={checkoutHref} onClick={persistOrderDraft}>
+          <Link className={styles.mobileBuyBtn} to={contactHref} onClick={persistOrderDraft}>
               Buy (${price} CAD)
             </Link>
-          ) : (
-            <a className={styles.mobileBuyBtn} href={contactHref} onClick={persistOrderDraft}>
-              Buy (${price} CAD)
-            </a>
-          )}
         </div>
       </div>
     </div>
