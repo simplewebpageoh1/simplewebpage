@@ -4,11 +4,37 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import styles from "./Header.module.scss";
 
+function getBuyLabel(plan: string) {
+  const p = (plan ?? "").toLowerCase();
+  if (p === "plus") return "Buy ($129 CAD)";
+  if (p === "basic") return "Buy ($99 CAD)";
+  return "Buy";
+}
+
 export default function Header() {
   const location = useLocation();
+
   const isContact = location.pathname === "/contact";
-  // ✅ Contact 페이지에서 이미 query(template/plan/...)가 있는 경우, Buy를 눌러도 URL을 리셋하지 않도록 현재 search를 유지
-  const buyTo = isContact ? `/contact${location.search}` : "/contact?from=nav";
+  const isIntake = location.pathname === "/intake";
+  const isThankYou = location.pathname === "/thank-you";
+
+  const params = new URLSearchParams(location.search);
+  const template = (params.get("template") ?? "").trim();
+  const plan = (params.get("plan") ?? "").trim().toLowerCase();
+
+  const hasSelection = !!template && (plan === "basic" || plan === "plus");
+
+  // ✅ 기본 CTA: 문의(Contact)로 유도
+  // - Contact 페이지에서 다시 눌러도 query를 리셋하지 않도록 현재 search 유지
+  const contactTo = isContact ? `/contact${location.search}` : "/contact?from=nav";
+
+  // ✅ 선택값이 있으면(특히 Contact/Intake/ThankYou) CTA를 결제(Buy)로 전환
+  const checkoutTo = `/checkout${location.search}`;
+
+  const inCheckoutContext = isContact || isIntake || isThankYou;
+
+  const ctaLabel = hasSelection && inCheckoutContext ? getBuyLabel(plan) : "Contact";
+  const ctaTo = hasSelection && inCheckoutContext ? checkoutTo : contactTo;
 
   return (
     <header className={styles.header}>
@@ -20,7 +46,6 @@ export default function Header() {
 
         {/* ✅ 네비게이션 링크 */}
         <nav className={styles.nav}>
-          {/* ✅ NavLink는 현재 페이지일 때 active 스타일 주기 쉬움 (나중에 확장 가능) */}
           <NavLink to="/" className={styles.link}>
             Home
           </NavLink>
@@ -28,14 +53,15 @@ export default function Header() {
             Templates
           </NavLink>
 
-          {/* ✅ 문의로 유도하는 CTA 버튼 */}
+          {/* ✅ CTA: 기본은 Contact, 선택값이 있으면 Contact/Intake에서 Buy로 표시 */}
           <NavLink
-            to={buyTo}
+            to={ctaTo}
             className={styles.cta}
             onClick={() => {
-              // ✅ "Contact 페이지에서 Buy 재클릭"은 아무것도 초기화하지 않음 (query 유지)
-              if (isContact) return;
-              // ✅ nav에서 Buy로 Contact로 갈 때, 과거 데모 선택값 자동 채움 혼란 방지
+              // ✅ Contact/Intake/ThankYou에서 선택값이 있는 상태(Buy 모드)면 초기화 금지
+              if (hasSelection && inCheckoutContext) return;
+
+              // ✅ nav에서 Contact를 눌러 새 문의 흐름으로 시작할 때만 초기화
               try {
                 localStorage.removeItem("demoOrderDraft:v1");
                 sessionStorage.removeItem("orderFlow:fromDemo");
@@ -43,7 +69,9 @@ export default function Header() {
                 // ignore
               }
             }}
-          >Buy</NavLink>
+          >
+            {ctaLabel}
+          </NavLink>
         </nav>
       </div>
     </header>

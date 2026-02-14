@@ -23,6 +23,13 @@ export default function Intake() {
   // ✅ 어떤 템플릿을 샀는지(가능하면 URL로 넘겨받기): /intake?template=handyman
   const template = params.get("template") ?? "";
 
+  const plan = (params.get("plan") ?? "").trim().toLowerCase();
+  const color = (params.get("color") ?? "").trim().toLowerCase();
+  const font = (params.get("font") ?? "").trim().toLowerCase();
+  const customColor = (params.get("customColor") ?? "").trim();
+
+  const hasSelection = !!template && (plan === "basic" || plan === "plus");
+
   const [businessName, setBusinessName] = useState("");
   const [tagline, setTagline] = useState("");
   const [serviceArea, setServiceArea] = useState("");
@@ -40,6 +47,7 @@ export default function Intake() {
   // ✅ 섹션 순서 요청(선택)
   // 예: hero > services > about > why one-page? > contact
   const [layoutOrderRequest, setLayoutOrderRequest] = useState("");
+
 
   // ✅ Add-ons 선택(추가 요금)
   // - 체크박스를 선택해도 즉시 결제되지 않습니다.
@@ -60,6 +68,10 @@ export default function Intake() {
     const formData: Record<string, string> = {
       "form-name": "intake",
       template,
+      plan,
+      color,
+      font,
+      customColor,
       businessName,
       tagline,
       serviceArea,
@@ -89,7 +101,7 @@ export default function Intake() {
       if (!res.ok) throw new Error("Intake submit failed");
 
       // ✅ 제출 후 안내 페이지로 이동(감사/다음 단계)
-      navigate(template ? `/thank-you?template=${template}` : "/thank-you");
+      navigate(hasSelection ? `/checkout${location.search}` : (template ? `/thank-you?template=${template}` : "/thank-you"));
     } catch (err) {
       alert("Submission failed. Please try again.");
       console.error(err);
@@ -108,22 +120,20 @@ export default function Intake() {
 
       <div className="container">
         <h1 className={styles.title}>Website Setup Form</h1>
-        <p className={styles.desc}>
-          Please submit your business details. We use this to customize your
-          one-page template.
-          <br />
-          <strong>Typical turnaround:</strong> review within 24 hours → go live
-          within 24–48 hours.
-        </p>
+          <p className={styles.desc}>
+            Please submit your business details. We use this to customize your one-page template.
+            <br />
+            <strong>Typical turnaround:</strong> review within 24 hours → go live within 24–48 hours.
+            <br />
+            <strong>Next:</strong> After you submit, you’ll be redirected to the payment page to complete checkout.
+          </p>
 
         <div className={styles.selected}>
           <p className={styles.selectedLabel}>
-            <strong>Selected template:</strong>{" "}
-            {template ? template : "Not selected"}
+            <strong>Selected template:</strong> {template ? `${template}${plan ? ` (${plan})` : ""}` : "Not selected"}
           </p>
           <p className={styles.selectedHint}>
-            If you purchased a specific template, use the link we provided (it
-            will include the template name).
+            If you purchased a specific template, use the link we provided (it will include the template name).
           </p>
         </div>
 
@@ -137,7 +147,13 @@ export default function Intake() {
           onSubmit={handleSubmit}
         >
           <input type="hidden" name="form-name" value="intake" />
-          <input type="hidden" name="template" value={template} />
+          
+            <input type="hidden" name="template" value={template} />
+            <input type="hidden" name="plan" value={plan} />
+            <input type="hidden" name="color" value={color} />
+            <input type="hidden" name="font" value={font} />
+            <input type="hidden" name="customColor" value={customColor} />
+	    
 
           <p style={{ display: "none" }}>
             <label>
@@ -147,21 +163,12 @@ export default function Intake() {
 
           <label className={styles.label}>
             Business name
-            <input
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              required
-              placeholder="e.g., ABC Handyman"
-            />
+            <input value={businessName} onChange={(e) => setBusinessName(e.target.value)} required placeholder="e.g., ABC Handyman" />
           </label>
 
           <label className={styles.label}>
             Tagline (short)
-            <input
-              value={tagline}
-              onChange={(e) => setTagline(e.target.value)}
-              placeholder="e.g., Repairs · Installations · Local"
-            />
+            <input value={tagline} onChange={(e) => setTagline(e.target.value)} placeholder="e.g., Repairs · Installations · Local" />
           </label>
 
           <label className={styles.label}>
@@ -186,22 +193,12 @@ export default function Intake() {
           <div className={styles.row2}>
             <label className={styles.label}>
               Phone
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                placeholder="e.g., 403-123-4567"
-              />
+              <input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="e.g., 403-123-4567" />
             </label>
 
             <label className={styles.label}>
               Email
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="e.g., info@simplewebpageoh.com"
-              />
+              <input value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="e.g., info@simplewebpageoh.com" />
             </label>
           </div>
 
@@ -212,20 +209,52 @@ export default function Intake() {
               onChange={(e) => setServices(e.target.value)}
               required
               rows={6}
-              placeholder={
-                "Example:\n- Drywall patching\n- Door & trim repairs\n- TV mounting\n- Small renovations"
-              }
+              placeholder={"Example:\n- Drywall patching\n- Door & trim repairs\n- TV mounting\n- Small renovations"}
             />
           </label>
 
           {/* ✅ Add-ons 선택 (추가 요금) */}
           <div className={styles.addonsBlock}>
-            <div className={styles.addonsTitle}>
-              Optional help (recommended for a smooth launch)
-            </div>
+            <div className={styles.addonsTitle}>Optional help (recommended for a smooth launch)</div>
             <p className={styles.addonsHint}>
               These are optional. We’ll confirm details before starting.
             </p>
+
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                name="addonCopywriting"
+                checked={addonCopywriting}
+                onChange={(e) => setAddonCopywriting(e.target.checked)}
+              />
+              <span>
+                Copy refinement (+$49) — professional wording for headlines, services, and your call-to-action
+              </span>
+            </label>
+
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                name="addonDomainConnection"
+                checked={addonDomainConnection}
+                onChange={(e) => setAddonDomainConnection(e.target.checked)}
+              />
+              <span>
+                Domain connection (+$49) — we handle DNS + SSL + Netlify setup for you.
+                <br />
+                <strong>DIY is free</strong> (guide included) — or <strong>we do it for $49</strong>.
+              </span>
+            </label>
+
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                name="addonExtraRevisions"
+                checked={addonExtraRevisions}
+                onChange={(e) => setAddonExtraRevisions(e.target.checked)}
+              />
+              <span>Additional revisions or small custom changes (+$39)</span>
+            </label>
 
             <label className={styles.checkRow}>
               <input
@@ -235,8 +264,7 @@ export default function Intake() {
                 onChange={(e) => setAddonGoogleBusiness(e.target.checked)}
               />
               <span>
-                Google Business Profile setup (+$79) — profile setup + basic
-                optimization
+                Google Business Profile setup (+$79) — profile setup + basic optimization
                 <br />
                 <strong>Verification is required by the business owner</strong>.
               </span>
@@ -249,49 +277,7 @@ export default function Intake() {
                 checked={addonReviewRequest}
                 onChange={(e) => setAddonReviewRequest(e.target.checked)}
               />
-              <span>
-                Review request message setup (+$39) — simple message template to
-                collect more Google reviews
-              </span>
-            </label>
-
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonCopywriting"
-                checked={addonCopywriting}
-                onChange={(e) => setAddonCopywriting(e.target.checked)}
-              />
-              <span>
-                Copy refinement (+$49) — professional wording for headlines,
-                services, and your call-to-action
-              </span>
-            </label>
-
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonDomainConnection"
-                checked={addonDomainConnection}
-                onChange={(e) => setAddonDomainConnection(e.target.checked)}
-              />
-              <span>
-                Domain connection (+$49) — we handle DNS + SSL + Netlify setup
-                for you.
-                <br />
-                <strong>DIY is free</strong> (guide included) — or{" "}
-                <strong>we do it for $49</strong>.
-              </span>
-            </label>
-
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonExtraRevisions"
-                checked={addonExtraRevisions}
-                onChange={(e) => setAddonExtraRevisions(e.target.checked)}
-              />
-              <span>Additional revisions or small custom changes (+$39)</span>
+              <span>Review request message setup (+$39) — simple message template to collect more Google reviews</span>
             </label>
           </div>
 
@@ -314,8 +300,7 @@ export default function Intake() {
               placeholder="Example: hero > services > about > contact\nAvailable sections: hero, services, about, why one-page?, contact"
             />
             <small className={styles.hint}>
-              If you want a different section order, write it here. (We will
-              apply it when building your final site.)
+              If you want a different section order, write it here. (We will apply it when building your final site.)
             </small>
           </label>
 
@@ -346,19 +331,10 @@ export default function Intake() {
         <div className={styles.help}>
           <p>
             Need help with domain setup? Open the guide:
-            <a
-              className={styles.pdfLink}
-              href="/Domain-Hosting-Guide.pdf"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {" "}
-              Domain & Hosting Guide (PDF)
-            </a>
+            <a className={styles.pdfLink} href="/Domain-Hosting-Guide.pdf" target="_blank" rel="noreferrer"> Domain & Hosting Guide (PDF)</a>
           </p>
           <p style={{ marginTop: 10, opacity: 0.85 }}>
-            Small fixes are included after go-live. Additional updates are
-            available for a flat fee (+$39).
+            Small fixes are included after go-live. Additional updates are available for a flat fee (+$39).
           </p>
         </div>
       </div>

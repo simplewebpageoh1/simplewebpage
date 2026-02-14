@@ -11,8 +11,16 @@ import styles from "./DemoOnePage.module.scss";
 import { TEMPLATE_PAGES } from "../../data/templatePages";
 import type { SectionId } from "../../data/templatePages/types";
 
-type ColorPreset = { id: "black" | "orange" | "blue" | "green" | "purple"; name: string; hex: string };
-type FontPreset = { id: "inter" | "poppins" | "montserrat" | "merriweather" | "robotoslab"; name: string; family: string };
+type ColorPreset = {
+  id: "black" | "orange" | "blue" | "green" | "purple";
+  name: string;
+  hex: string;
+};
+type FontPreset = {
+  id: "inter" | "poppins" | "montserrat" | "merriweather" | "robotoslab";
+  name: string;
+  family: string;
+};
 
 const COLOR_PRESETS: ColorPreset[] = [
   { id: "black", name: "Black", hex: "#111111" },
@@ -23,11 +31,34 @@ const COLOR_PRESETS: ColorPreset[] = [
 ];
 
 const FONT_PRESETS: FontPreset[] = [
-  { id: "inter", name: "Inter", family: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" },
-  { id: "poppins", name: "Poppins", family: "Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" },
-  { id: "montserrat", name: "Montserrat", family: "Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" },
-  { id: "merriweather", name: "Merriweather", family: "Merriweather, Georgia, 'Times New Roman', serif" },
-  { id: "robotoslab", name: "Roboto Slab", family: "'Roboto Slab', Georgia, 'Times New Roman', serif" },
+  {
+    id: "inter",
+    name: "Inter",
+    family:
+      "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  },
+  {
+    id: "poppins",
+    name: "Poppins",
+    family:
+      "Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  },
+  {
+    id: "montserrat",
+    name: "Montserrat",
+    family:
+      "Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  },
+  {
+    id: "merriweather",
+    name: "Merriweather",
+    family: "Merriweather, Georgia, 'Times New Roman', serif",
+  },
+  {
+    id: "robotoslab",
+    name: "Roboto Slab",
+    family: "'Roboto Slab', Georgia, 'Times New Roman', serif",
+  },
 ];
 
 const STORAGE_KEY = "demoTheme:global:v1";
@@ -38,7 +69,12 @@ const PLUS_PRICE = 129;
 
 type PreviewMode = "desktop" | "mobile";
 
-function safeLoad(): { colorId?: string; customColor?: string | null; fontId?: string; planId?: PlanId } | null {
+function safeLoad(): {
+  colorId?: string;
+  customColor?: string | null;
+  fontId?: string;
+  planId?: PlanId;
+} | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : null;
@@ -47,7 +83,12 @@ function safeLoad(): { colorId?: string; customColor?: string | null; fontId?: s
   }
 }
 
-function safeSave(v: { colorId: string; customColor: string | null; fontId: string; planId: PlanId }) {
+function safeSave(v: {
+  colorId: string;
+  customColor: string | null;
+  fontId: string;
+  planId: PlanId;
+}) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(v));
   } catch {
@@ -85,22 +126,44 @@ function getReadableTextColor(hexBg: string) {
 export default function DemoOnePage() {
   const { slug } = useParams();
   const location = useLocation();
-  const uiMode = useMemo(() => (new URLSearchParams(location.search).get("mode") ?? "demo"), [location.search]);
+  const uiMode = useMemo(
+    () => new URLSearchParams(location.search).get("mode") ?? "demo",
+    [location.search],
+  );
   const isClientMode = uiMode === "client";
 
-
-  const page = useMemo(() => TEMPLATE_PAGES.find((p) => p.slug === slug), [slug]);
+  const page = useMemo(
+    () => TEMPLATE_PAGES.find((p) => p.slug === slug),
+    [slug],
+  );
   if (!page) return null;
 
   const d = page.demo;
 
+  // ✅ Stripe 결제 링크 (있으면 바로 구매)
+  // ✅ Stripe payment links (optional)
+  // - If set, Buy will go to Stripe.
   // - If not set, Buy will go to /contact with selected options.
+  const stripeLinkBasic = import.meta.env.VITE_STRIPE_PAYMENT_LINK_BASIC as
+    | string
+    | undefined;
+  const stripeLinkPlus = import.meta.env.VITE_STRIPE_PAYMENT_LINK_PLUS as
+    | string
+    | undefined;
 
   // ✅ localStorage 값을 "처음 렌더"부터 반영하기 위해 lazy init 사용
-  const [planId, setPlanId] = useState<PlanId>(() => safeLoad()?.planId ?? "basic");
-  const [colorId, setColorId] = useState<string>(() => safeLoad()?.colorId ?? "black");
-  const [customColor, setCustomColor] = useState<string | null>(() => safeLoad()?.customColor ?? null);
-  const [fontId, setFontId] = useState<string>(() => safeLoad()?.fontId ?? "inter");
+  const [planId, setPlanId] = useState<PlanId>(
+    () => safeLoad()?.planId ?? "basic",
+  );
+  const [colorId, setColorId] = useState<string>(
+    () => safeLoad()?.colorId ?? "black",
+  );
+  const [customColor, setCustomColor] = useState<string | null>(
+    () => safeLoad()?.customColor ?? null,
+  );
+  const [fontId, setFontId] = useState<string>(
+    () => safeLoad()?.fontId ?? "inter",
+  );
 
   // ✅ Colors/Fonts 패널: 필요할 때만 열어보기
   const [controlsOpen, setControlsOpen] = useState<boolean>(false);
@@ -126,7 +189,8 @@ export default function DemoOnePage() {
     if (anyMq.addEventListener) anyMq.addEventListener("change", onChange);
     else anyMq.addListener(onChange);
     return () => {
-      if (anyMq.removeEventListener) anyMq.removeEventListener("change", onChange);
+      if (anyMq.removeEventListener)
+        anyMq.removeEventListener("change", onChange);
       else anyMq.removeListener(onChange);
     };
   }, []);
@@ -172,7 +236,14 @@ export default function DemoOnePage() {
     safeSave({ planId, colorId, customColor, fontId });
   }, [planId, colorId, customColor, fontId]);
 
+  const stripeLink = planId === "plus" ? stripeLinkPlus : stripeLinkBasic;
 
+  const checkoutHref = useMemo(() => {
+    const params = new URLSearchParams();
+    params.set("template", page.slug);
+    params.set("plan", planId);
+    return `/checkout?${params.toString()}`;
+  }, [page.slug, planId]);
 
   const contactHref = (() => {
     const params = new URLSearchParams();
@@ -180,7 +251,8 @@ export default function DemoOnePage() {
     params.set("plan", planId);
     params.set("color", colorId);
     params.set("font", fontId);
-    if (colorId === "custom" && customColor) params.set("customColor", customColor);
+    if (colorId === "custom" && customColor)
+      params.set("customColor", customColor);
     return `/contact?${params.toString()}`;
   })();
 
@@ -213,18 +285,29 @@ export default function DemoOnePage() {
   }, [planId]);
 
   // 현재 선택 색상 계산
-  const preset = COLOR_PRESETS.find((c) => c.id === (colorId as any)) ?? COLOR_PRESETS[0];
+  const preset =
+    COLOR_PRESETS.find((c) => c.id === (colorId as any)) ?? COLOR_PRESETS[0];
   const customAllowed = planId === "plus";
-  const brand = customAllowed && colorId === "custom" && customColor ? customColor : preset.hex;
+  const brand =
+    customAllowed && colorId === "custom" && customColor
+      ? customColor
+      : preset.hex;
 
   // black 테마는 너무 회색/색감 섞이지 않게 기본 연회색 유지
-  const bgSoft = preset.id === "black" && colorId !== "custom" ? "#f5f6f8" : mixWithWhite(brand, 0.88);
+  const bgSoft =
+    preset.id === "black" && colorId !== "custom"
+      ? "#f5f6f8"
+      : mixWithWhite(brand, 0.88);
   // ✅ 섹션 배경(번갈아 적용): 선택 색상의 아주 연한 틴트
   // hero는 항상 흰색, 그 다음 섹션부터 tint / white / tint / ...
-  const sectionTint = preset.id === "black" && colorId !== "custom" ? "#f0f1f3" : mixWithWhite(brand, 0.92);
+  const sectionTint =
+    preset.id === "black" && colorId !== "custom"
+      ? "#f0f1f3"
+      : mixWithWhite(brand, 0.92);
   const brandText = getReadableTextColor(brand);
 
-  const font = FONT_PRESETS.find((f) => f.id === (fontId as any)) ?? FONT_PRESETS[0];
+  const font =
+    FONT_PRESETS.find((f) => f.id === (fontId as any)) ?? FONT_PRESETS[0];
 
   // ✅ CSS 변수로만 스타일을 바꿈(레이아웃은 그대로)
   const themeVars = {
@@ -244,19 +327,35 @@ export default function DemoOnePage() {
 
   const price = planId === "plus" ? PLUS_PRICE : BASIC_PRICE;
 
-  const seoTitle = localSeoTitle ? `${localSeoTitle} | One-Page Website` : `${page.heading} Demo | Preview`;
+  const seoTitle = localSeoTitle
+    ? `${localSeoTitle} | One-Page Website`
+    : `${page.heading} Demo | Preview`;
 
   // ✅ 섹션 순서
-  const defaultLayoutOrder: SectionId[] = ["hero", "services", "about", "whyOnePage", "contact"];
-  const rawOrder = (page.layoutOrder && page.layoutOrder.length ? page.layoutOrder : defaultLayoutOrder) as SectionId[];
-  const layoutOrder: SectionId[] = (rawOrder.filter((id) =>
-    ["hero", "services", "about", "whyOnePage", "contact"].includes(id)
-  ) as SectionId[]);
+  const defaultLayoutOrder: SectionId[] = [
+    "hero",
+    "services",
+    "about",
+    "whyOnePage",
+    "contact",
+  ];
+  const rawOrder = (
+    page.layoutOrder && page.layoutOrder.length
+      ? page.layoutOrder
+      : defaultLayoutOrder
+  ) as SectionId[];
+  const layoutOrder: SectionId[] = rawOrder.filter((id) =>
+    ["hero", "services", "about", "whyOnePage", "contact"].includes(id),
+  ) as SectionId[];
   if (!layoutOrder.includes("hero")) layoutOrder.unshift("hero");
 
   return (
     <div className={styles.page}>
-      <Seo title={seoTitle} description={page.description} path={`/demo/${page.slug}`} />
+      <Seo
+        title={seoTitle}
+        description={page.description}
+        path={`/demo/${page.slug}`}
+      />
 
       {/* ✅ Top bar (화이트 헤더 느낌) */}
       <div className={styles.topBar}>
@@ -276,9 +375,13 @@ export default function DemoOnePage() {
               {controlsOpen ? "Hide options" : "Customize"}
             </button>
 
-            <Link className={`${styles.buy} ${styles.topBuy}`} to={contactHref} onClick={persistOrderDraft}>
-                Buy (${price} CAD)
-              </Link>
+            <Link
+              className={`${styles.buy} ${styles.topBuy}`}
+              to={contactHref}
+              onClick={persistOrderDraft}
+            >
+              Buy (${price} CAD)
+            </Link>
           </div>
         </div>
 
@@ -289,162 +392,184 @@ export default function DemoOnePage() {
           data-open={controlsOpen ? "1" : "0"}
         >
           <div className={`container ${styles.toolbar}`}>
-          {/* Plan */}
-          <div className={styles.group}>
-            <div className={styles.groupTitle}>Plan</div>
-            <div className={styles.btnRow}>
-              <button
-                type="button"
-                className={`${styles.pill} ${planId === "basic" ? styles.active : ""}`}
-                onClick={() => setPlanId("basic")}
-              >
-                Basic (${BASIC_PRICE})
-              </button>
-              <button
-                type="button"
-                className={`${styles.pill} ${planId === "plus" ? styles.active : ""}`}
-                onClick={() => setPlanId("plus")}
-              >
-                Plus (${PLUS_PRICE} • Custom Color)
-              </button>
-            </div>
-            <div className={styles.planNote}>
-              Basic = presets only. Plus = <strong>Custom color</strong> (your brand).
-            </div>
-          </div>
-
-          {/* View */}
-          <div className={styles.group}>
-            <div className={styles.groupTitle}>View</div>
-            <div className={styles.btnRow}>
-              <button
-                type="button"
-                className={`${styles.pill} ${previewMode === "desktop" ? styles.active : ""}`}
-                onClick={() => setPreviewMode("desktop")}
-              >
-                Desktop
-              </button>
-              <button
-                type="button"
-                className={`${styles.pill} ${previewMode === "mobile" ? styles.active : ""}`}
-                onClick={() => setPreviewMode("mobile")}
-              >
-                Mobile
-              </button>
-            </div>
-          </div>
-
-          {/* Colors */}
-          <div className={styles.group}>
-            <div className={styles.groupTitle}>Colors</div>
-
-            <div className={styles.btnRow}>
-              {/* ✅ Custom pill (항상 1개만) */}
-              <button
-                type="button"
-                className={`${styles.pill} ${colorId === "custom" ? styles.active : ""}`}
-                onClick={() => {
-                  if (!customAllowed) {
-                    setShowPlusUpsell(true);
-                    window.setTimeout(() => setShowPlusUpsell(false), 2200);
-                    return;
-                  }
-                  if (customColor) setColorId("custom");
-                }}
-                disabled={!customAllowed || !customColor}
-                title={!customAllowed ? "Plus only" : customColor ? customColor : "Pick a custom color first"}
-              >
-                <span className={styles.swatch} style={{ background: customColor ?? "#111111" }} />
-                Custom
-              </button>
-
-              {COLOR_PRESETS.map((c) => (
+            {/* Plan */}
+            <div className={styles.group}>
+              <div className={styles.groupTitle}>Plan</div>
+              <div className={styles.btnRow}>
                 <button
-                  key={c.id}
                   type="button"
-                  className={`${styles.pill} ${colorId === c.id ? styles.active : ""}`}
+                  className={`${styles.pill} ${planId === "basic" ? styles.active : ""}`}
+                  onClick={() => setPlanId("basic")}
+                >
+                  Basic (${BASIC_PRICE})
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.pill} ${planId === "plus" ? styles.active : ""}`}
+                  onClick={() => setPlanId("plus")}
+                >
+                  Plus (${PLUS_PRICE} • Custom Color)
+                </button>
+              </div>
+              <div className={styles.planNote}>
+                Basic = presets only. Plus = <strong>Custom color</strong> (your
+                brand).
+              </div>
+            </div>
+
+            {/* View */}
+            <div className={styles.group}>
+              <div className={styles.groupTitle}>View</div>
+              <div className={styles.btnRow}>
+                <button
+                  type="button"
+                  className={`${styles.pill} ${previewMode === "desktop" ? styles.active : ""}`}
+                  onClick={() => setPreviewMode("desktop")}
+                >
+                  Desktop
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.pill} ${previewMode === "mobile" ? styles.active : ""}`}
+                  onClick={() => setPreviewMode("mobile")}
+                >
+                  Mobile
+                </button>
+              </div>
+            </div>
+
+            {/* Colors */}
+            <div className={styles.group}>
+              <div className={styles.groupTitle}>Colors</div>
+
+              <div className={styles.btnRow}>
+                {/* ✅ Custom pill (항상 1개만) */}
+                <button
+                  type="button"
+                  className={`${styles.pill} ${colorId === "custom" ? styles.active : ""}`}
                   onClick={() => {
+                    if (!customAllowed) {
+                      setShowPlusUpsell(true);
+                      window.setTimeout(() => setShowPlusUpsell(false), 2200);
+                      return;
+                    }
+                    if (customColor) setColorId("custom");
+                  }}
+                  disabled={!customAllowed || !customColor}
+                  title={
+                    !customAllowed
+                      ? "Plus only"
+                      : customColor
+                        ? customColor
+                        : "Pick a custom color first"
+                  }
+                >
+                  <span
+                    className={styles.swatch}
+                    style={{ background: customColor ?? "#111111" }}
+                  />
+                  Custom
+                </button>
+
+                {COLOR_PRESETS.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`${styles.pill} ${colorId === c.id ? styles.active : ""}`}
+                    onClick={() => {
+                      setCustomColor(null);
+                      setColorId(c.id);
+                    }}
+                  >
+                    <span
+                      className={styles.swatch}
+                      style={{ background: c.hex }}
+                    />
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* ✅ 자유 컬러 선택(미리보기용) */}
+              <label className={styles.colorPicker}>
+                <span>Custom color</span>
+                <input
+                  type="color"
+                  aria-label="Choose a custom brand color"
+                  value={customColor ?? "#111111"}
+                  disabled={!customAllowed}
+                  onClick={() => {
+                    if (!customAllowed) {
+                      setShowPlusUpsell(true);
+                      window.setTimeout(() => setShowPlusUpsell(false), 2200);
+                    }
+                  }}
+                  onChange={(e) => {
+                    if (!customAllowed) return;
+                    setCustomColor(e.target.value);
+                    setColorId("custom");
+                  }}
+                />
+                {!customAllowed && (
+                  <span className={styles.plusOnly}>Plus only</span>
+                )}
+              </label>
+
+              {showPlusUpsell && !customAllowed && (
+                <div className={styles.upsellTip} role="status">
+                  This is a <strong>Plus</strong> feature. Upgrade to use your
+                  own brand color.
+                </div>
+              )}
+            </div>
+
+            {/* Fonts */}
+            <div className={styles.group}>
+              <div className={styles.groupTitle}>Fonts</div>
+              <div className={styles.btnRow}>
+                {FONT_PRESETS.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className={`${styles.pill} ${fontId === f.id ? styles.active : ""}`}
+                    onClick={() => setFontId(f.id)}
+                  >
+                    {f.name}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  className={styles.reset}
+                  onClick={() => {
+                    setPlanId("basic");
+                    setColorId("black");
                     setCustomColor(null);
-                    setColorId(c.id);
+                    setFontId("inter");
+                    try {
+                      localStorage.removeItem(STORAGE_KEY);
+                    } catch {
+                      // ignore
+                    }
                   }}
                 >
-                  <span className={styles.swatch} style={{ background: c.hex }} />
-                  {c.name}
+                  Reset
                 </button>
-              ))}
-            </div>
-
-            {/* ✅ 자유 컬러 선택(미리보기용) */}
-            <label className={styles.colorPicker}>
-              <span>Custom color</span>
-              <input
-                type="color"
-                aria-label="Choose a custom brand color"
-                value={customColor ?? "#111111"}
-                disabled={!customAllowed}
-                onClick={() => {
-                  if (!customAllowed) {
-                    setShowPlusUpsell(true);
-                    window.setTimeout(() => setShowPlusUpsell(false), 2200);
-                  }
-                }}
-                onChange={(e) => {
-                  if (!customAllowed) return;
-                  setCustomColor(e.target.value);
-                  setColorId("custom");
-                }}
-              />
-              {!customAllowed && <span className={styles.plusOnly}>Plus only</span>}
-            </label>
-
-            {showPlusUpsell && !customAllowed && (
-              <div className={styles.upsellTip} role="status">
-                This is a <strong>Plus</strong> feature. Upgrade to use your own brand color.
               </div>
-            )}
-          </div>
-
-          {/* Fonts */}
-          <div className={styles.group}>
-            <div className={styles.groupTitle}>Fonts</div>
-            <div className={styles.btnRow}>
-              {FONT_PRESETS.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  className={`${styles.pill} ${fontId === f.id ? styles.active : ""}`}
-                  onClick={() => setFontId(f.id)}
-                >
-                  {f.name}
-                </button>
-              ))}
-
-              <button
-                type="button"
-                className={styles.reset}
-                onClick={() => {
-                  setPlanId("basic");
-                  setColorId("black");
-                  setCustomColor(null);
-                  setFontId("inter");
-                  try {
-                    localStorage.removeItem(STORAGE_KEY);
-                  } catch {
-                    // ignore
-                  }
-                }}
-              >
-                Reset
-              </button>
             </div>
-          </div>
           </div>
         </div>
       </div>
 
       {/* ✅ Preview 영역에만 테마 적용 (상단 툴바/Back 링크는 영향 X) */}
-      <div className={styles.preview} style={themeVars} data-mobile={isMobileUi ? "1" : "0"}>
-        <div className={`${styles.viewport} ${previewMode === "mobile" ? styles.mobile : ""}`}>
+      <div
+        className={styles.preview}
+        style={themeVars}
+        data-mobile={isMobileUi ? "1" : "0"}
+      >
+        <div
+          className={`${styles.viewport} ${previewMode === "mobile" ? styles.mobile : ""}`}
+        >
           {(() => {
             const order: SectionId[] = Array.from(new Set(layoutOrder));
             // ✅ IMPORTANT: background must follow the *render order*.
@@ -462,132 +587,180 @@ export default function DemoOnePage() {
               switch (id) {
                 case "hero":
                   return (
-                <header className={styles.hero} id="home">
-                  <div className="container">
-                    <p className={styles.kicker}>Fast response</p>
-                    <h1 className={styles.brand}>{localSeoTitle || d.brand}</h1>
-                    <p className={styles.sub}>{d.subtitle}</p>
+                    <header className={styles.hero} id="home">
+                      <div className="container">
+                        <p className={styles.kicker}>Fast response</p>
+                        <h1 className={styles.brand}>
+                          {localSeoTitle || d.brand}
+                        </h1>
+                        <p className={styles.sub}>{d.subtitle}</p>
 
-                    <div className={styles.metaRow}>
-                      <span className={styles.meta}>{localServiceAreaLine}</span>
-                      <a className={styles.phone} href={`tel:${d.phoneTel}`}>
-                        {d.phoneDisplay}
-                      </a>
-                    </div>
+                        <div className={styles.metaRow}>
+                          <span className={styles.meta}>
+                            {localServiceAreaLine}
+                          </span>
+                          <a
+                            className={styles.phone}
+                            href={`tel:${d.phoneTel}`}
+                          >
+                            {d.phoneDisplay}
+                          </a>
+                        </div>
 
-                    <div className={styles.heroCtas}>
-                      <a className={styles.primary} href="#contact">
-                        Request a quote
-                      </a>
-                      <a className={styles.secondary} href="#services">
-                        View services
-                      </a>
-                    </div>
-                  </div>
-                </header>
+                        <div className={styles.heroCtas}>
+                          <a className={styles.primary} href="#contact">
+                            Request a quote
+                          </a>
+                          <a className={styles.secondary} href="#services">
+                            View services
+                          </a>
+                        </div>
+                      </div>
+                    </header>
                   );
 
                 case "services":
                   return (
-                <section className={styles.section} id="services" style={{ backgroundColor: bg }}>
-                  <div className="container">
-                    <div className={styles.sectionHeader}>
-                      <h2 className={styles.sectionTitle}>Services</h2>
-                      <p className={styles.sectionSub}>What we offer — simple and clear.</p>
-                    </div>
-
-                    <div className={styles.grid}>
-                      {d.services.map((s) => (
-                        <div key={s.title} className={styles.card}>
-                          <h3 className={styles.h3}>{s.title}</h3>
-                          <p className={styles.p}>{s.description}</p>
+                    <section
+                      className={styles.section}
+                      id="services"
+                      style={{ backgroundColor: bg }}
+                    >
+                      <div className="container">
+                        <div className={styles.sectionHeader}>
+                          <h2 className={styles.sectionTitle}>Services</h2>
+                          <p className={styles.sectionSub}>
+                            What we offer — simple and clear.
+                          </p>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
+
+                        <div className={styles.grid}>
+                          {d.services.map((s) => (
+                            <div key={s.title} className={styles.card}>
+                              <h3 className={styles.h3}>{s.title}</h3>
+                              <p className={styles.p}>{s.description}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
                   );
 
                 case "about":
                   return (
-                <section className={styles.section} id="about" style={{ backgroundColor: bg }}>
-                  <div className="container">
-                    <div className={styles.sectionHeader}>
-                      <h2 className={styles.sectionTitle}>About</h2>
-                      <p className={styles.sectionSub}>A short story that builds trust.</p>
-                    </div>
+                    <section
+                      className={styles.section}
+                      id="about"
+                      style={{ backgroundColor: bg }}
+                    >
+                      <div className="container">
+                        <div className={styles.sectionHeader}>
+                          <h2 className={styles.sectionTitle}>About</h2>
+                          <p className={styles.sectionSub}>
+                            A short story that builds trust.
+                          </p>
+                        </div>
 
-                    <p className={styles.p}>
-                      We are a small local business serving our community. We keep things simple: clear pricing, clean work,
-                      and fast communication.
-                    </p>
-                    <p className={styles.p}>
-                      This is a one-page template designed to help customers understand your service and contact you quickly.
-                    </p>
-                  </div>
-                </section>
+                        <p className={styles.p}>
+                          We are a small local business serving our community.
+                          We keep things simple: clear pricing, clean work, and
+                          fast communication.
+                        </p>
+                        <p className={styles.p}>
+                          This is a one-page template designed to help customers
+                          understand your service and contact you quickly.
+                        </p>
+                      </div>
+                    </section>
                   );
 
                 case "whyOnePage":
                   return !isClientMode && page.seoLines?.length ? (
-                  <section className={styles.section} id="why-one-page" style={{ backgroundColor: bg }}>
-                    <div className="container">
-                      <div className={styles.sectionHeader}>
-                        <h2 className={styles.sectionTitle}>Why One-Page?</h2>
-                        <p className={styles.sectionSub}>Short reasons that help customers decide.</p>
-                        <p className={styles.previewNote}>
-                          Preview-only section. On your final website, this area will be replaced with client content (e.g.,
-                          FAQ / Why choose us).
-                        </p>
+                    <section
+                      className={styles.section}
+                      id="why-one-page"
+                      style={{ backgroundColor: bg }}
+                    >
+                      <div className="container">
+                        <div className={styles.sectionHeader}>
+                          <h2 className={styles.sectionTitle}>Why One-Page?</h2>
+                          <p className={styles.sectionSub}>
+                            Short reasons that help customers decide.
+                          </p>
+                          <p className={styles.previewNote}>
+                            Preview-only section. On your final website, this
+                            area will be replaced with client content (e.g., FAQ
+                            / Why choose us).
+                          </p>
+                        </div>
+                        <ul className={styles.bullets}>
+                          {page.seoLines.map((line) => (
+                            <li key={line} className={styles.bulletItem}>
+                              {line}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className={styles.bullets}>
-                        {page.seoLines.map((line) => (
-                          <li key={line} className={styles.bulletItem}>
-                            {line}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </section>
-                ) : null;
+                    </section>
+                  ) : null;
 
                 case "contact":
                   return (
-                <section className={styles.section} id="contact" style={{ backgroundColor: bg }}>
-                  <div className="container">
-                    <div className={styles.sectionHeader}>
-                      <h2 className={styles.sectionTitle}>Contact</h2>
-                      <p className={styles.sectionSub}>Fast response and clear next steps.</p>
-                    </div>
+                    <section
+                      className={styles.section}
+                      id="contact"
+                      style={{ backgroundColor: bg }}
+                    >
+                      <div className="container">
+                        <div className={styles.sectionHeader}>
+                          <h2 className={styles.sectionTitle}>Contact</h2>
+                          <p className={styles.sectionSub}>
+                            Fast response and clear next steps.
+                          </p>
+                        </div>
 
-                    <p className={styles.p}>Tell us what you need and we will reply fast.</p>
+                        <p className={styles.p}>
+                          Tell us what you need and we will reply fast.
+                        </p>
 
-                    <div className={styles.contactBox}>
-                      <div className={styles.contactRow}>
-                        <span className={styles.label}>Phone</span>
-                        <a className={styles.value} href={`tel:${d.phoneTel}`}>
-                          {d.phoneDisplay}
-                        </a>
-                      </div>
-                      <div className={styles.contactRow}>
-                        <span className={styles.label}>Service area</span>
-                        <span className={styles.value}>{localServiceAreaLine}</span>
-                      </div>
-                      <div className={styles.contactRow}>
-                        <span className={styles.label}>Email</span>
-                        <span className={styles.value}>info@simplewebpageoh.com</span>
-                      </div>
+                        <div className={styles.contactBox}>
+                          <div className={styles.contactRow}>
+                            <span className={styles.label}>Phone</span>
+                            <a
+                              className={styles.value}
+                              href={`tel:${d.phoneTel}`}
+                            >
+                              {d.phoneDisplay}
+                            </a>
+                          </div>
+                          <div className={styles.contactRow}>
+                            <span className={styles.label}>Service area</span>
+                            <span className={styles.value}>
+                              {localServiceAreaLine}
+                            </span>
+                          </div>
+                          <div className={styles.contactRow}>
+                            <span className={styles.label}>Email</span>
+                            <span className={styles.value}>
+                              info@simplewebpageoh.com
+                            </span>
+                          </div>
 
-                      <div className={styles.note}>
-                        Want this website for your business? One-time price: <strong>${price} CAD</strong>.
-                      </div>
+                          <div className={styles.note}>
+                            Want this website for your business? One-time price:{" "}
+                            <strong>${price} CAD</strong>.
+                          </div>
 
-                      <Link className={styles.buy2} to={contactHref} onClick={persistOrderDraft}>
-                        Buy / Get Started
-                      </Link>
-                    </div>
-                  </div>
-                </section>
+                          <Link
+                            className={styles.buy2}
+                            to={contactHref}
+                            onClick={persistOrderDraft}
+                          >
+                            Buy / Get Started
+                          </Link>
+                        </div>
+                      </div>
+                    </section>
                   );
 
                 default:
@@ -615,9 +788,23 @@ export default function DemoOnePage() {
       {/* ✅ Mobile Sticky Bottom Buy Bar (<=640px) */}
       <div className={styles.mobileBuyBar} aria-hidden={!isMobileUi}>
         <div className={styles.mobileBuyInner}>
-          <Link className={styles.mobileBuyBtn} to={contactHref} onClick={persistOrderDraft}>
+          {stripeLink ? (
+            <Link
+              className={styles.mobileBuyBtn}
+              to={contactHref}
+              onClick={persistOrderDraft}
+            >
               Buy (${price} CAD)
             </Link>
+          ) : (
+            <Link
+              className={styles.mobileBuyBtn}
+              to={contactHref}
+              onClick={persistOrderDraft}
+            >
+              Buy (${price} CAD)
+            </Link>
+          )}
         </div>
       </div>
     </div>

@@ -141,6 +141,7 @@ export default function ThankYou() {
           >
             <strong>What happens next?</strong>
             <ul style={{ margin: "8px 0 0 18px" }}>
+              <li>{isPaid ? "Payment is confirmed — we’ll start building your page once you complete the setup form." : "To get started, please complete the setup form and finish payment."}</li>
               <li>
                 We’ll review your information within <strong>24 hours</strong>.
               </li>
@@ -173,7 +174,7 @@ export default function ThankYou() {
                   textDecoration: "none",
                 }}
               >
-                Open Setup Form
+                <strong>Open Setup Form</strong>
               </Link>
             )}
 
