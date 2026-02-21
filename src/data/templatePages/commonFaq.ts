@@ -11,10 +11,10 @@ export const COMMON_FAQ: FaqItem[] = [
   },
   {
     q: "Do you connect my domain for me?",
-    a: "The $99 template includes a domain & hosting guide PDF. Domain connection is available as an optional add-on.",
+    a: "The $129 template includes a domain & hosting guide PDF. Domain connection is available as an optional add-on.",
   },
   {
-    q: "What’s included in the $99 price?",
+    q: "What’s included in the $129 price?",
     a: "A simple one-page layout, mobile-friendly design, and basic SEO title & description. Custom copywriting and additional revisions are optional add-ons.",
   },
 ];

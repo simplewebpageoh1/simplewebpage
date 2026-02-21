@@ -46,7 +46,7 @@ export default function Compare({
             <div className={styles.box}>
               <h3>Simple One-Page Templates</h3>
               <ul>
-                <li>One-time price ($99 CAD)</li>
+                <li>One-time price ($129 CAD)</li>
                 <li>Fast loading and mobile-friendly</li>
                 <li>Includes domain/hosting guide PDF</li>
               </ul>

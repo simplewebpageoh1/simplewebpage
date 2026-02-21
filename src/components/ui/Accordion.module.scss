@@ -1,0 +1,6 @@
+.wrap{display:flex; flex-direction:column; gap:12px;}
+.item{width:100%; text-align:left; padding:16px 18px; cursor:pointer; background: var(--card); color: var(--text);}
+.head{display:flex; align-items:center; justify-content:space-between; gap:12px;}
+.title{font-weight:800; letter-spacing:-0.01em; color: var(--text);}
+.icon{width:28px; height:28px; border-radius:999px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); color: var(--muted); font-weight:900;}
+.body{margin-top:10px; color: var(--muted); line-height:1.6;}

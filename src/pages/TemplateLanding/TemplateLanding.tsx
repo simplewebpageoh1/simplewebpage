@@ -30,7 +30,7 @@ export default function TemplateLanding() {
             </div>
 
             <div className={styles.badges}>
-              <span className={styles.badge}>One-time price: $99 CAD</span>
+              <span className={styles.badge}>One-time price: $129 CAD</span>
               <span className={styles.badge}>No monthly builder fees</span>
               <span className={styles.badge}>Includes PDF guide</span>
             </div>

@@ -1,7 +1,7 @@
 // src/pages/Templates/Templates.tsx
 // ✅ 템플릿 목록(유입/탐색용)
-// - One-page 템플릿만 집중
-// - 섹션별 옅은 회색 배경으로 구분을 명확하게
+// - 업종(Industry) × 테마(Theme A/B/C)
+// - 초기에는 Electrician만 노출 (추후 업종 추가 예정)
 
 import Seo from "../../components/seo/Seo";
 import styles from "./Templates.module.scss";
@@ -9,18 +9,23 @@ import { Link } from "react-router-dom";
 import { PURCHASE_STEPS } from "../../data/templatePages/templatePages";
 import { trackEvent } from "../../utils/analytics";
 
-const ITEMS = [
-  { slug: "handyman", title: "Handyman (One Page)", desc: "Simple template for local handyman services in Canada." },
-  { slug: "cleaning", title: "Cleaning (One Page)", desc: "Simple template for residential / commercial cleaning services." },
-  { slug: "electrician", title: "Electrician (One Page)", desc: "Professional template for electricians with clear service messaging." },
-];
+const ELECTRICIAN = {
+  slug: "electrician",
+  title: "Electrician (One Page)",
+  desc: "Professional one-page template for electricians with 3 design themes.",
+  themes: [
+    { id: "A", label: "A (Black&White)" },
+    { id: "B", label: "B (Dark Mode)" },
+    { id: "C", label: "C (Soft Pastel)" },
+  ] as const,
+};
 
 export default function Templates() {
   return (
     <div className={styles.page}>
       <Seo
         title="Templates | Simple One-Page Websites"
-        description="Browse simple one-page website templates for small businesses in Canada."
+        description="Browse one-page website templates by industry and theme."
         path="/templates"
       />
 
@@ -28,63 +33,61 @@ export default function Templates() {
         <div className="container">
           <h1 className={styles.title}>Templates</h1>
           <p className={styles.subtitle}>
-            SEO-friendly one-page templates designed for small service businesses in Canada.
-            One-time price: <strong>$99 CAD</strong>. Includes a domain/hosting guide PDF.
+            One-time price: <strong>$129 CAD</strong>. Choose an industry and then pick a
+            theme (A/B/C).
           </p>
 
-          {/* ✅ 섹션 1: 템플릿 카드 */}
+          {/* ✅ 섹션 1: 템플릿(업종) + 테마(ABC) */}
           <div className={styles.sectionSoft}>
             <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Available templates</h2>
-              <p className={styles.sectionSub}>Pick one to see details, preview the demo, or buy.</p>
-            </div>
-
-            <div className={styles.grid}>
-              {ITEMS.map((t) => (
-                <div key={t.slug} className={styles.card}>
-                  <h3 className={styles.cardTitle}>{t.title}</h3>
-                  <p className={styles.cardDesc}>{t.desc}</p>
-
-                  <div className={styles.cardActions}>
-                    <Link className={styles.action} to={`/templates/${t.slug}`}>Details</Link>
-                    <Link
-                      className={styles.action}
-                      to={`/demo/${t.slug}`}
-                      onClick={() => trackEvent("template_preview", { slug: t.slug, location: "templates_list" })}
-                    >
-                      Preview
-                    </Link>
-                    <Link
-                      className={`${styles.action} ${styles.buyAction}`}
-                      to={`/contact?template=${t.slug}`}
-                      onClick={() => trackEvent("template_buy_intent", { slug: t.slug, location: "templates_list" })}
-                    >
-                      Buy
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-
-          {/* ✅ 섹션 1.5: 고객용(최종) 미리보기 링크
-              - Preview(/demo)는 옵션바가 있어서 '샘플 느낌'이 날 수 있음
-              - mode=client는 최종 고객 사이트에 가까운 버전(혼란 예방) */}
-          <div className={styles.sectionSoftAlt}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Client-version previews</h2>
+              <h2 className={styles.sectionTitle}>Available</h2>
               <p className={styles.sectionSub}>
-                Want to see what the final website looks like? These links hide the demo controls.
+                Preview Theme A/B/C, then buy. (More industries will be added.)
               </p>
             </div>
 
-            <div className={styles.clientGrid}>
-              {ITEMS.map((t) => (
-                <a key={t.slug} className={styles.clientLink} href={`/demo/${t.slug}?mode=client`}>
-                  {t.title} → View final-style preview
-                </a>
-              ))}
+            <div className={styles.grid}>
+              <div className={styles.card}>
+                <h3 className={styles.cardTitle}>{ELECTRICIAN.title}</h3>
+                <p className={styles.cardDesc}>{ELECTRICIAN.desc}</p>
+
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
+                  {ELECTRICIAN.themes.map((t) => (
+                    <Link
+                      key={t.id}
+                      className={styles.action}
+                      to={`/demo/electrician/${t.id.toLowerCase()}`}
+                      onClick={() =>
+                        trackEvent("template_preview", {
+                          industry: ELECTRICIAN.slug,
+                          theme: t.id,
+                          location: "templates_list",
+                        })
+                      }
+                    >
+                      Preview {t.label}
+                    </Link>
+                  ))}
+
+                  <Link
+                    className={`${styles.action} ${styles.buyAction}`}
+                    to={`/checkout?template=${ELECTRICIAN.slug}&theme=A`}
+                    onClick={() =>
+                      trackEvent("template_buy_intent", {
+                        industry: ELECTRICIAN.slug,
+                        location: "templates_list",
+                      })
+                    }
+                  >
+                    Buy ($129)
+                  </Link>
+                </div>
+
+                <div style={{ marginTop: 10, opacity: 0.9, lineHeight: 1.5 }}>
+                  Tip: Use the <b>Desktop</b>/<b>Mobile</b> buttons on the demo page to
+                  check both versions.
+                </div>
+              </div>
             </div>
           </div>
 
@@ -93,7 +96,7 @@ export default function Templates() {
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Need a different industry?</h2>
               <p className={styles.sectionSub}>
-                We can adapt this one-page layout for many other trades and services in Canada.
+                We&apos;ll add more industries over time. If you need one now, contact us.
               </p>
             </div>
 
@@ -104,10 +107,20 @@ export default function Templates() {
 
               <div className={styles.pills}>
                 {[
-                  "Plumbing","Painting","HVAC","Landscaping","Roofing",
-                  "Flooring","Moving","Personal Trainer","Tutor","Beauty / Salon",
+                  "Cleaning",
+                  "Handyman",
+                  "Plumbing",
+                  "Painting",
+                  "HVAC",
+                  "Landscaping",
+                  "Roofing",
+                  "Flooring",
+                  "Moving",
+                  "Personal Trainer",
                 ].map((x) => (
-                  <span key={x} className={styles.pill}>{x}</span>
+                  <span key={x} className={styles.pill}>
+                    {x}
+                  </span>
                 ))}
               </div>
 
@@ -162,7 +175,6 @@ export default function Templates() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
     </div>

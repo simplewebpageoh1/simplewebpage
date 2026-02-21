@@ -1,13 +1,19 @@
 // src/pages/Intake/Intake.tsx
 // ✅ 구매 후 '사업 정보/문구' 제출 폼(Intake Form)
-// - 목표: 판매 후 왕복 질문을 줄이고, 필요한 자료를 한 번에 받기
-// - Netlify Forms를 사용(간단/무료/배포 후 바로 작동)
-// - 파일 업로드는 Netlify Forms에서 제한적일 수 있어 "로고 링크" 방식 권장
+// - Netlify Forms 사용
 
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import Seo from "../../components/seo/Seo";
+import { normalizeTheme, themeLabel } from "../../lib/theme";
 import styles from "./Intake.module.scss";
+
+type AddonKey =
+  | "google_business"
+  | "review_request"
+  | "copy_refinement"
+  | "domain_connection"
+  | "extra_revisions";
 
 function encode(data: Record<string, string>) {
   return Object.keys(data)
@@ -15,20 +21,37 @@ function encode(data: Record<string, string>) {
     .join("&");
 }
 
+function parseAddons(csv: string): Set<AddonKey> {
+  const out = new Set<AddonKey>();
+  csv
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .forEach((s) => {
+      if (
+        s === "google_business" ||
+        s === "review_request" ||
+        s === "copy_refinement" ||
+        s === "domain_connection" ||
+        s === "extra_revisions"
+      ) {
+        out.add(s);
+      }
+    });
+  return out;
+}
+
 export default function Intake() {
   const navigate = useNavigate();
   const location = useLocation();
-  const params = new URLSearchParams(location.search);
+  const params = useMemo(() => new URLSearchParams(location.search), [location.search]);
 
-  // ✅ 어떤 템플릿을 샀는지(가능하면 URL로 넘겨받기): /intake?template=handyman
+  // URL params (from Stripe success_url)
   const template = params.get("template") ?? "";
+  const theme = normalizeTheme(params.get("theme"));
+  const addonsCsv = params.get("addons") ?? "";
 
-  const plan = (params.get("plan") ?? "").trim().toLowerCase();
-  const color = (params.get("color") ?? "").trim().toLowerCase();
-  const font = (params.get("font") ?? "").trim().toLowerCase();
-  const customColor = (params.get("customColor") ?? "").trim();
-
-  const hasSelection = !!template && (plan === "basic" || plan === "plus");
+  const addonsFromUrl = useMemo(() => parseAddons(addonsCsv), [addonsCsv]);
 
   const [businessName, setBusinessName] = useState("");
   const [tagline, setTagline] = useState("");
@@ -39,24 +62,25 @@ export default function Intake() {
   const [about, setAbout] = useState("");
   const [logoLink, setLogoLink] = useState("");
   const [notes, setNotes] = useState("");
-
-  // ✅ 고객이 선택할 스타일(색/글씨체) - 기본값: Black & White + Inter
-  const [themeColor, setThemeColor] = useState("black");
-  const [themeFont, setThemeFont] = useState("inter");
-
-  // ✅ 섹션 순서 요청(선택)
-  // 예: hero > services > about > why one-page? > contact
   const [layoutOrderRequest, setLayoutOrderRequest] = useState("");
 
-
-  // ✅ Add-ons 선택(추가 요금)
-  // - 체크박스를 선택해도 즉시 결제되지 않습니다.
-  // - 제출 후 우리가 확인/견적 확정 후 진행합니다.
+  // ✅ Add-ons (reflect what was paid)
   const [addonCopywriting, setAddonCopywriting] = useState(false);
   const [addonDomainConnection, setAddonDomainConnection] = useState(false);
   const [addonExtraRevisions, setAddonExtraRevisions] = useState(false);
   const [addonGoogleBusiness, setAddonGoogleBusiness] = useState(false);
   const [addonReviewRequest, setAddonReviewRequest] = useState(false);
+
+  useEffect(() => {
+    // ✅ Pre-check paid add-ons.
+    // If the user already checked something (true), keep it.
+    // If checkout URL says it was purchased, ensure it becomes checked.
+    setAddonGoogleBusiness((v) => v || addonsFromUrl.has("google_business"));
+    setAddonReviewRequest((v) => v || addonsFromUrl.has("review_request"));
+    setAddonCopywriting((v) => v || addonsFromUrl.has("copy_refinement"));
+    setAddonDomainConnection((v) => v || addonsFromUrl.has("domain_connection"));
+    setAddonExtraRevisions((v) => v || addonsFromUrl.has("extra_revisions"));
+  }, [addonsFromUrl]);
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -68,10 +92,8 @@ export default function Intake() {
     const formData: Record<string, string> = {
       "form-name": "intake",
       template,
-      plan,
-      color,
-      font,
-      customColor,
+      theme,
+      addons: addonsCsv,
       businessName,
       tagline,
       serviceArea,
@@ -83,7 +105,6 @@ export default function Intake() {
       notes,
       layoutOrderRequest,
 
-      // ✅ Add-ons 기록(문의/오해 감소)
       addonCopywriting: addonCopywriting ? "yes" : "no",
       addonDomainConnection: addonDomainConnection ? "yes" : "no",
       addonExtraRevisions: addonExtraRevisions ? "yes" : "no",
@@ -100,8 +121,13 @@ export default function Intake() {
 
       if (!res.ok) throw new Error("Intake submit failed");
 
-      // ✅ 제출 후 안내 페이지로 이동(감사/다음 단계)
-      navigate(hasSelection ? `/checkout${location.search}` : (template ? `/thank-you?template=${template}` : "/thank-you"));
+      // 제출 후 Thank You로
+      const ty = new URLSearchParams();
+      ty.set("paid", "true");
+      if (template) ty.set("template", template);
+      ty.set("theme", theme);
+      if (addonsCsv) ty.set("addons", addonsCsv);
+      navigate(`/thank-you?${ty.toString()}`);
     } catch (err) {
       alert("Submission failed. Please try again.");
       console.error(err);
@@ -119,42 +145,38 @@ export default function Intake() {
       />
 
       <div className="container">
-        <h1 className={styles.title}>Website Setup Form</h1>
-          <p className={styles.desc}>
-            Please submit your business details. We use this to customize your one-page template.
-            <br />
-            <strong>Typical turnaround:</strong> review within 24 hours → go live within 24–48 hours.
-            <br />
-            <strong>Next:</strong> After you submit, you’ll be redirected to the payment page to complete checkout.
-          </p>
+        <h1 className={styles.title}>Website setup form</h1>
+        <p className={styles.subtitle}>
+          Fill this out once — it helps us build your website faster.
+        </p>
 
-        <div className={styles.selected}>
-          <p className={styles.selectedLabel}>
-            <strong>Selected template:</strong> {template ? `${template}${plan ? ` (${plan})` : ""}` : "Not selected"}
-          </p>
-          <p className={styles.selectedHint}>
-            If you purchased a specific template, use the link we provided (it will include the template name).
-          </p>
+        <div className={styles.badgeRow}>
+          {template ? (
+            <span className={styles.badge}>
+              Template: <strong>{template}</strong>
+            </span>
+          ) : null}
+          <span className={styles.badge}>
+            Theme: <strong>{themeLabel(theme)}</strong>
+          </span>
         </div>
 
-        {/* ✅ Netlify Forms 인식용 속성 유지 */}
+        {!template ? (
+          <div className={styles.notice}>
+            Missing template info. Please go back to Templates and start from checkout.
+          </div>
+        ) : null}
+
         <form
-          className={styles.form}
           name="intake"
           method="POST"
           data-netlify="true"
-          data-netlify-honeypot="bot-field"
+          netlify-honeypot="bot-field"
           onSubmit={handleSubmit}
         >
           <input type="hidden" name="form-name" value="intake" />
-          
-            <input type="hidden" name="template" value={template} />
-            <input type="hidden" name="plan" value={plan} />
-            <input type="hidden" name="color" value={color} />
-            <input type="hidden" name="font" value={font} />
-            <input type="hidden" name="customColor" value={customColor} />
-	    
 
+          {/* honeypot */}
           <p style={{ display: "none" }}>
             <label>
               Don’t fill this out if you're human: <input name="bot-field" />
@@ -163,12 +185,21 @@ export default function Intake() {
 
           <label className={styles.label}>
             Business name
-            <input value={businessName} onChange={(e) => setBusinessName(e.target.value)} required placeholder="e.g., ABC Handyman" />
+            <input
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              required
+              placeholder="e.g., ABC Electric"
+            />
           </label>
 
           <label className={styles.label}>
             Tagline (short)
-            <input value={tagline} onChange={(e) => setTagline(e.target.value)} placeholder="e.g., Repairs · Installations · Local" />
+            <input
+              value={tagline}
+              onChange={(e) => setTagline(e.target.value)}
+              placeholder="e.g., Licensed · Insured · Fast response"
+            />
           </label>
 
           <label className={styles.label}>
@@ -178,7 +209,6 @@ export default function Intake() {
               onChange={(e) => {
                 const v = e.target.value;
                 setServiceArea(v);
-                // ✅ Local SEO draft: demo/preview에서 "in [Service Area]"를 자동 반영할 수 있게 저장
                 try {
                   localStorage.setItem("intake:serviceArea", v);
                 } catch {
@@ -193,12 +223,22 @@ export default function Intake() {
           <div className={styles.row2}>
             <label className={styles.label}>
               Phone
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="e.g., 403-123-4567" />
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                placeholder="e.g., 403-123-4567"
+              />
             </label>
 
             <label className={styles.label}>
               Email
-              <input value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="e.g., info@simplewebpageoh.com" />
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="e.g., info@simplewebpageoh.com"
+              />
             </label>
           </div>
 
@@ -209,52 +249,16 @@ export default function Intake() {
               onChange={(e) => setServices(e.target.value)}
               required
               rows={6}
-              placeholder={"Example:\n- Drywall patching\n- Door & trim repairs\n- TV mounting\n- Small renovations"}
+              placeholder={"Example:\n- Panel upgrades\n- Lighting\n- EV charger installs"}
             />
           </label>
 
-          {/* ✅ Add-ons 선택 (추가 요금) */}
+          {/* Add-ons */}
           <div className={styles.addonsBlock}>
-            <div className={styles.addonsTitle}>Optional help (recommended for a smooth launch)</div>
+            <div className={styles.addonsTitle}>Add-ons</div>
             <p className={styles.addonsHint}>
-              These are optional. We’ll confirm details before starting.
+              If you selected add-ons at checkout, they should already be checked here.
             </p>
-
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonCopywriting"
-                checked={addonCopywriting}
-                onChange={(e) => setAddonCopywriting(e.target.checked)}
-              />
-              <span>
-                Copy refinement (+$49) — professional wording for headlines, services, and your call-to-action
-              </span>
-            </label>
-
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonDomainConnection"
-                checked={addonDomainConnection}
-                onChange={(e) => setAddonDomainConnection(e.target.checked)}
-              />
-              <span>
-                Domain connection (+$49) — we handle DNS + SSL + Netlify setup for you.
-                <br />
-                <strong>DIY is free</strong> (guide included) — or <strong>we do it for $49</strong>.
-              </span>
-            </label>
-
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonExtraRevisions"
-                checked={addonExtraRevisions}
-                onChange={(e) => setAddonExtraRevisions(e.target.checked)}
-              />
-              <span>Additional revisions or small custom changes (+$39)</span>
-            </label>
 
             <label className={styles.checkRow}>
               <input
@@ -263,11 +267,7 @@ export default function Intake() {
                 checked={addonGoogleBusiness}
                 onChange={(e) => setAddonGoogleBusiness(e.target.checked)}
               />
-              <span>
-                Google Business Profile setup (+$79) — profile setup + basic optimization
-                <br />
-                <strong>Verification is required by the business owner</strong>.
-              </span>
+              <span>Google Business Profile setup (+$79)</span>
             </label>
 
             <label className={styles.checkRow}>
@@ -277,7 +277,37 @@ export default function Intake() {
                 checked={addonReviewRequest}
                 onChange={(e) => setAddonReviewRequest(e.target.checked)}
               />
-              <span>Review request message setup (+$39) — simple message template to collect more Google reviews</span>
+              <span>Review request message setup (+$39)</span>
+            </label>
+
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                name="addonCopywriting"
+                checked={addonCopywriting}
+                onChange={(e) => setAddonCopywriting(e.target.checked)}
+              />
+              <span>Copy refinement (+$49)</span>
+            </label>
+
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                name="addonDomainConnection"
+                checked={addonDomainConnection}
+                onChange={(e) => setAddonDomainConnection(e.target.checked)}
+              />
+              <span>Domain connection — done for you (+$49)</span>
+            </label>
+
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                name="addonExtraRevisions"
+                checked={addonExtraRevisions}
+                onChange={(e) => setAddonExtraRevisions(e.target.checked)}
+              />
+              <span>Additional revisions / small changes (+$39)</span>
             </label>
           </div>
 
@@ -292,24 +322,11 @@ export default function Intake() {
           </label>
 
           <label className={styles.label}>
-            Section order request (optional)
-            <textarea
-              value={layoutOrderRequest}
-              onChange={(e) => setLayoutOrderRequest(e.target.value)}
-              rows={3}
-              placeholder="Example: hero > services > about > contact\nAvailable sections: hero, services, about, why one-page?, contact"
-            />
-            <small className={styles.hint}>
-              If you want a different section order, write it here. (We will apply it when building your final site.)
-            </small>
-          </label>
-
-          <label className={styles.label}>
             Logo link (optional)
             <input
               value={logoLink}
               onChange={(e) => setLogoLink(e.target.value)}
-              placeholder="Google Drive / Dropbox / website link to your logo"
+              placeholder="Paste a link to your logo (Google Drive/Dropbox/etc.)"
             />
           </label>
 
@@ -318,25 +335,24 @@ export default function Intake() {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={4}
-              placeholder="Any extra requests or notes. Small fixes are included after go-live; additional updates are available for a flat fee ($39)."
+              rows={5}
+              placeholder="Anything else we should know?"
             />
           </label>
 
-          <button type="submit" disabled={submitting}>
+          <label className={styles.label}>
+            Layout order request (optional)
+            <input
+              value={layoutOrderRequest}
+              onChange={(e) => setLayoutOrderRequest(e.target.value)}
+              placeholder="e.g., hero > services > about > contact"
+            />
+          </label>
+
+          <button className={styles.submit} type="submit" disabled={submitting}>
             {submitting ? "Submitting..." : "Submit"}
           </button>
         </form>
-
-        <div className={styles.help}>
-          <p>
-            Need help with domain setup? Open the guide:
-            <a className={styles.pdfLink} href="/Domain-Hosting-Guide.pdf" target="_blank" rel="noreferrer"> Domain & Hosting Guide (PDF)</a>
-          </p>
-          <p style={{ marginTop: 10, opacity: 0.85 }}>
-            Small fixes are included after go-live. Additional updates are available for a flat fee (+$39).
-          </p>
-        </div>
       </div>
     </main>
   );

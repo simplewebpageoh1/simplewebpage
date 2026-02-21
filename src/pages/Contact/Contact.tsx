@@ -1,30 +1,18 @@
 // src/pages/Contact/Contact.tsx
-// ✅ Netlify Forms를 SPA(React)에서 안정적으로 쓰는 방식
-// - 폼 제출을 "페이지 이동(POST)" 대신 fetch로 보낸다.
-// - 성공하면 React Router로 /thank-you 이동 => 404 문제 방지
+// ✅ 목표: Netlify Forms(기록) + SendGrid(이메일) 둘 다 성공시키기
+// - 1) Netlify Forms: fetch("/") with x-www-form-urlencoded  (Dashboard 기록)
+// - 2) Email notify: fetch("/.netlify/functions/send-contact") (관리자 메일 알림)
+// - 이메일이 실패해도, Netlify 기록이 남으면 "문의는 접수됨"으로 처리(리드 유실 방지)
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import styles from "./Contact.module.scss";
 import Seo from "../../components/seo/Seo";
+import { normalizeTheme, themeLabel } from "../../lib/theme";
 
 type DemoOrderDraftV1 = {
   template?: string;
-  plan?: string;
-  colorId?: string;
-  customColor?: string;
-  fontId?: string;
   updatedAt?: number;
-};
-
-// ✅ DemoOnePage의 COLOR_PRESETS와 동일하게 맞춤
-// - Contact 요약 카드의 색상칩이 실제 선택 색과 항상 일치
-const COLOR_PRESETS: Record<string, string> = {
-  black: "#111111",
-  orange: "#ff8a00",
-  blue: "#2563eb",
-  green: "#16a34a",
-  purple: "#7c3aed",
 };
 
 type IndustryId =
@@ -59,34 +47,75 @@ const INDUSTRY_OPTIONS: { id: IndustryId; label: string }[] = [
 function encode(data: Record<string, string>) {
   // ✅ application/x-www-form-urlencoded 형식으로 변환
   return Object.keys(data)
-    .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
     .join("&");
+}
+
+async function submitToNetlifyForms(formData: Record<string, string>) {
+  // ✅ Netlify Forms에 저장 (Dashboard 기록)
+  const res = await fetch("/", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: encode(formData),
+  });
+
+  if (!res.ok) throw new Error("Netlify form submit failed");
+}
+
+async function notifyByEmail(payload: {
+  name: string;
+  email: string;
+  message: string;
+  theme?: string;
+  template?: string;
+  addons?: string[];
+  industry?: string;
+  industryId?: string;
+  industryOther?: string;
+  selectionSummary?: string;
+  selectionJson?: any;
+}) {
+  // ✅ SendGrid 이메일 알림 (Netlify Function)
+  const res = await fetch("/.netlify/functions/send-contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  // send-contact가 { success: true } 를 준다는 전제
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok || !data?.success) {
+    const reason = data?.error || "Email notify failed";
+    throw new Error(reason);
+  }
 }
 
 export default function Contact() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ 어떤 데모에서 왔는지 query로 받기: /contact?template=roofing
   const params = new URLSearchParams(location.search);
 
   const from = params.get("from") ?? "";
   const templateFromQuery = params.get("template") ?? "";
 
-  // ✅ 입력값 상태 관리 (초보자에게 가장 이해 쉬운 방식)
+  const themeFromQueryRaw = params.get("theme");
+  const themeFromQuery = themeFromQueryRaw
+    ? normalizeTheme(themeFromQueryRaw)
+    : "";
+  const themeLabelText = useMemo(
+    () => themeLabel(themeFromQuery),
+    [themeFromQuery],
+  );
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  // ✅ 개인정보 안내 동의(모바일/판매 신뢰도)
   const [agree, setAgree] = useState(false);
-  const planFromQuery = params.get("plan") ?? "";
 
-  // ✅ Demo에서 저장해둔 선택값(주문 초안) 읽기
   const [draft, setDraft] = useState<DemoOrderDraftV1 | null>(null);
 
-  // ✅ Contact 자동 채움 규칙
-  // - 데모/구매 흐름에서 왔을 때만(demoOrderDraft / session flag / query) 자동 채움
-  // - nav에서 Contact를 눌렀다면 과거 선택값은 무시(혼란 방지)
   const hasSelectionQuery = useMemo(() => {
     return Boolean(
       params.get("template") ||
@@ -99,7 +128,6 @@ export default function Contact() {
   }, [location.search]);
 
   useEffect(() => {
-    // nav/pricing에서 들어오면 이전 선택값을 초기화
     if (from === "nav" || from === "pricing") {
       try {
         localStorage.removeItem("demoOrderDraft:v1");
@@ -134,31 +162,20 @@ export default function Contact() {
     }
   }, [from, hasSelectionQuery]);
 
-  // ✅ query가 있으면 query 우선, 없으면 draft fallback
   const selectedTemplate = templateFromQuery || draft?.template || "";
-  const selectedPlan = planFromQuery || draft?.plan || "";
-  const selectedColorId = params.get("color") || draft?.colorId || "";
-  const selectedCustomColor =
-    params.get("customColor") || draft?.customColor || "";
-  const selectedFontId = params.get("font") || draft?.fontId || "";
 
-  // ✅ 업종 선택(템플릿 3종 외에도 선택 가능)
-  // - 기본값: demo에서 넘어온 template가 electrician/cleaning/handyman이면 그 값을 자동 선택
-  // - query (?industry=plumbing 등)로도 직접 지정 가능
   const industryFromQuery = params.get("industry") ?? "";
   const initialIndustry = ((): IndustryId => {
     const t = (industryFromQuery || selectedTemplate || "").toLowerCase();
     const supported = INDUSTRY_OPTIONS.map((o) => o.id);
     if (supported.includes(t as any)) return t as IndustryId;
-    // template가 3종이 아니면 other로 유도
-    return selectedTemplate ? "other" : "other";
+    return "other";
   })();
 
   const [industryId, setIndustryId] = useState<IndustryId>(initialIndustry);
   const [industryOther, setIndustryOther] = useState<string>("");
   const [industryTouched, setIndustryTouched] = useState(false);
 
-  // ✅ draft가 늦게 로드되더라도, 사용자가 직접 바꾸지 않았다면 template 기반으로 업종을 자동 맞춤
   useEffect(() => {
     if (industryTouched) return;
     const t = (industryFromQuery || selectedTemplate || "").toLowerCase();
@@ -167,7 +184,6 @@ export default function Contact() {
       setIndustryId(t as IndustryId);
       return;
     }
-    // template가 지원 목록 밖이면 other 유지
     setIndustryId("other");
   }, [industryTouched, industryFromQuery, selectedTemplate]);
 
@@ -182,54 +198,20 @@ export default function Contact() {
     const parts: string[] = [];
     if (industryLabel) parts.push(`Industry: ${industryLabel}`);
     if (selectedTemplate) parts.push(`Template: ${selectedTemplate}`);
-    if (selectedPlan) parts.push(`Plan: ${selectedPlan}`);
-    if (selectedColorId)
-      parts.push(
-        `Color: ${selectedColorId}${selectedColorId === "custom" && selectedCustomColor ? ` (${selectedCustomColor})` : ""}`,
-      );
-    if (selectedFontId) parts.push(`Font: ${selectedFontId}`);
+    if (themeFromQuery) parts.push(`Theme: ${themeLabel(themeFromQuery)}`);
     return parts.join(" | ");
-  }, [
-    industryLabel,
-    selectedTemplate,
-    selectedPlan,
-    selectedColorId,
-    selectedCustomColor,
-    selectedFontId,
-  ]);
+  }, [industryLabel, selectedTemplate, themeFromQuery]);
 
-  const planPrice = useMemo(() => {
-    const p = (selectedPlan || "").toLowerCase();
-    if (p === "plus") return "$129";
-    if (p === "basic") return "$99";
-    return "";
-  }, [selectedPlan]);
-
-  const colorDisplay = useMemo(() => {
-    if (!selectedColorId) return "";
-    if (selectedColorId === "custom" && selectedCustomColor)
-      return `${selectedCustomColor}`;
-    return selectedColorId;
-  }, [selectedColorId, selectedCustomColor]);
-
-  const swatchColor = useMemo(() => {
-    if (!selectedColorId) return "#111111";
-    if (selectedColorId === "custom" && selectedCustomColor)
-      return selectedCustomColor;
-    return COLOR_PRESETS[selectedColorId] ?? "#111111";
-  }, [selectedColorId, selectedCustomColor]);
-
-  // ✅ 제출 중 중복 클릭 방지
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault(); // ✅ 기본 폼 이동(POST) 막기
+    e.preventDefault();
 
     if (submitting) return;
     setSubmitting(true);
 
-    // ✅ Netlify Forms는 form-name이 꼭 필요
-    const formData: Record<string, string> = {
+    // ✅ Netlify Forms 저장용 payload
+    const netlifyFormData: Record<string, string> = {
       "form-name": "contact",
       name,
       email,
@@ -238,43 +220,57 @@ export default function Contact() {
       industryOther,
       industry: industryLabel,
       template: selectedTemplate,
-      plan: selectedPlan,
-      colorId: selectedColorId,
-      customColor: selectedCustomColor,
-      fontId: selectedFontId,
+      theme: themeFromQuery,
       selectionSummary,
-      // ✅ 필요하면 전체 JSON도 같이 보낼 수 있게 추가
       selectionJson: JSON.stringify(
         {
           industryId,
           industryOther,
           industry: industryLabel,
           template: selectedTemplate,
-          plan: selectedPlan,
-          colorId: selectedColorId,
-          customColor: selectedCustomColor,
-          fontId: selectedFontId,
+          theme: themeFromQuery,
         },
         null,
         0,
       ),
     };
 
-    try {
-      // ✅ Netlify Forms에 제출 (중요: path는 "/" 추천)
-      const res = await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: encode(formData),
-      });
+    // ✅ Email 알림용 payload
+    const emailPayload = {
+      name,
+      email,
+      message,
+      theme: themeFromQuery,
+      template: selectedTemplate,
+      addons: [],
+      industry: industryLabel,
+      industryId,
+      industryOther,
+      selectionSummary,
+      selectionJson: {
+        industryId,
+        industryOther,
+        industry: industryLabel,
+        template: selectedTemplate,
+        theme: themeFromQuery,
+      },
+    };
 
-      if (!res.ok) {
-        // ✅ 서버가 2xx가 아니면 에러 처리
-        throw new Error("Form submit failed");
+    try {
+      // 1) Netlify Dashboard 기록은 "반드시" 남기기 (리드 유실 방지)
+      await submitToNetlifyForms(netlifyFormData);
+
+      // 2) 이메일은 실패해도 문의는 접수된 것으로 처리(옵션)
+      try {
+        await notifyByEmail(emailPayload);
+      } catch (mailErr) {
+        console.warn(
+          "Email notify failed (but Netlify record saved):",
+          mailErr,
+        );
       }
 
-      // ✅ 성공하면 SPA 라우팅으로 감사 페이지 이동 (404 방지)
-      // ✅ 제출이 끝났으면, 이전 주문 초안은 지워서 다음 일반 문의에 섞이지 않게
+      // 제출이 끝났으면 demo 초안 정리
       try {
         localStorage.removeItem("demoOrderDraft:v1");
         sessionStorage.removeItem("orderFlow:fromDemo");
@@ -283,10 +279,8 @@ export default function Contact() {
       }
 
       const qs = new URLSearchParams();
-
       if (selectedTemplate) qs.set("template", selectedTemplate);
-      if (selectedPlan) qs.set("plan", selectedPlan);
-
+      if (themeFromQuery) qs.set("theme", themeFromQuery);
       qs.set("from", "contact");
 
       navigate(`/thank-you?${qs.toString()}`);
@@ -305,16 +299,25 @@ export default function Contact() {
         description="Tell us about your business and we’ll reply within 24 hours."
         path="/contact"
       />
-      <main className={styles.page}>
+
+      <main
+        className={styles.page}
+        data-e-theme={
+          templateFromQuery.toLowerCase() === "electrician"
+            ? themeFromQuery
+            : ""
+        }
+      >
         <div className="container">
           <h1 className={styles.title}>Contact</h1>
+
           <section className={styles.selectionCard} aria-label="Your selection">
             <div className={styles.selectionHeader}>
               <div>
                 <div className={styles.selectionTitle}>Your selection</div>
                 <div className={styles.selectionSub}>
                   If you came from a demo page, we’ll attach your selected
-                  options automatically.
+                  template details automatically.
                 </div>
               </div>
               {selectionSummary ? (
@@ -372,87 +375,31 @@ export default function Contact() {
               </div>
 
               <div className={styles.selectionRow}>
-                <div className={styles.selectionKey}>Plan</div>
+                <div className={styles.selectionKey}>Theme</div>
                 <div className={styles.selectionVal}>
-                  {selectedPlan ? (
-                    <>
-                      {selectedPlan}
-                      {planPrice ? (
-                        <span className={styles.mini}> ({planPrice})</span>
-                      ) : null}
-                    </>
-                  ) : (
-                    "—"
-                  )}
+                  {themeLabelText || "—"}
                 </div>
               </div>
 
               <div className={styles.selectionRow}>
-                <div className={styles.selectionKey}>Brand color</div>
-                <div className={styles.selectionVal}>
-                  {colorDisplay ? (
-                    <>
-                      <span
-                        className={styles.swatch}
-                        style={{ background: swatchColor }}
-                        aria-hidden="true"
-                      />
-                      <span>{colorDisplay}</span>
-                    </>
-                  ) : (
-                    "—"
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.selectionRow}>
-                <div className={styles.selectionKey}>Font</div>
-                <div className={styles.selectionVal}>
-                  {selectedFontId || "—"}
-                </div>
+                <div className={styles.selectionKey}>Base price</div>
+                <div className={styles.selectionVal}>$129 CAD</div>
               </div>
             </div>
-
-            {selectedPlan?.toLowerCase() === "basic" && (
-              <div className={styles.selectionNote}>
-                Custom color is a <strong>Plus</strong> feature.
-              </div>
-            )}
           </section>
 
           <p className={styles.desc}>
             Tell us about your business. We’ll reply within 24 hours.
           </p>
+
           <p className={styles.reassurance}>
-            If you paid via <strong>Stripe</strong>, a receipt will be emailed
-            to you automatically.
+            If you already paid via <strong>Stripe</strong>, a receipt will be
+            emailed to you automatically.
             <br />
-            After you submit this form, we’ll confirm your order by email and
-            start building your site.
+            After you submit this form, we’ll reply by email within 24 hours.
           </p>
 
-          <div className={styles.note}>
-            <p>
-              <strong>Plans:</strong> Basic (<strong>$99</strong>) vs Plus (
-              <strong>$129</strong> — Custom Color included)
-            </p>
-            <p>
-              Includes: one-page template setup + basic text replacement
-              (business name, service area, contact) + a domain/hosting guide
-              PDF.
-              <a
-                className={styles.pdfLink}
-                href="/Domain-Hosting-Guide.pdf"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {" "}
-                Open PDF
-              </a>
-            </p>
-          </div>
-
-          {/* ✅ Netlify가 폼을 인식하도록 속성은 그대로 유지 */}
+          {/* ✅ Netlify가 폼을 “인식”하도록 속성은 유지 */}
           <form
             className={styles.form}
             name="contact"
@@ -461,27 +408,20 @@ export default function Contact() {
             data-netlify-honeypot="bot-field"
             onSubmit={handleSubmit}
           >
-            {/* ✅ Netlify 인식용 hidden input (필수) */}
+            {/* ✅ Netlify 인식용 hidden input */}
             <input type="hidden" name="form-name" value="contact" />
-            {/* ✅ 스팸 방지용(권장) */}
             <p style={{ display: "none" }}>
               <label>
                 Don’t fill this out if you're human: <input name="bot-field" />
               </label>
             </p>
-            {/* ✅ 어떤 템플릿에서 왔는지 함께 저장 */}
+
+            {/* 기록용 hidden들 */}
             <input type="hidden" name="industryId" value={industryId} />
             <input type="hidden" name="industryOther" value={industryOther} />
             <input type="hidden" name="industry" value={industryLabel} />
             <input type="hidden" name="template" value={selectedTemplate} />
-            <input type="hidden" name="plan" value={selectedPlan} />
-            <input type="hidden" name="colorId" value={selectedColorId} />
-            <input
-              type="hidden"
-              name="customColor"
-              value={selectedCustomColor}
-            />
-            <input type="hidden" name="fontId" value={selectedFontId} />
+            <input type="hidden" name="theme" value={themeFromQuery} />
             <input
               type="hidden"
               name="selectionSummary"
@@ -495,10 +435,7 @@ export default function Contact() {
                 industryOther,
                 industry: industryLabel,
                 template: selectedTemplate,
-                plan: selectedPlan,
-                colorId: selectedColorId,
-                customColor: selectedCustomColor,
-                fontId: selectedFontId,
+                theme: themeFromQuery,
               })}
             />
 
@@ -538,7 +475,6 @@ export default function Contact() {
               />
             </label>
 
-            {/* ✅ 개인정보 안내(결제/문의 직전 불안감 감소) */}
             <div className={styles.noticeBox}>
               <p className={styles.noticeText}>
                 We collect your information solely to provide a quote and build

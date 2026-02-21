@@ -1,6 +1,6 @@
 // src/pages/Home/Home.tsx
 // ✅ Home 페이지(판매 랜딩)
-// - 목표: 99불 원페이지 템플릿 판매 컨셉에 맞게 문구/CTA 정리
+// - 목표: 129불 원페이지 템플릿 판매 컨셉에 맞게 문구/CTA 정리
 // - 레이아웃(섹션 구조)은 최대한 유지
 
 import Hero from "../../components/sections/Hero/Hero";
@@ -26,12 +26,12 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="Professional Website Built for You in 48 Hours — Just $99"
+        title="Professional Website Built for You in 48 Hours — Just $129"
         description="Simple one-page websites for local service businesses in Canada. One-time payment. No subscriptions. Live in 24–48 hours."
         path="/"
       />
       <Hero
-        title="Professional Website Built for You in 48 Hours — Just $99"
+        title="Professional Website Built for You in 48 Hours — Just $129"
         subtitle={`No tech stress, no monthly fees.
 Just send us your details, and we’ll handle the build and publishing for you.`}
         primaryCtaText="View Templates"
@@ -78,7 +78,7 @@ Just send us your details, and we’ll handle the build and publishing for you.`
 
       <ContactCTA
         title="Ready to launch a simple one-page website?"
-        subtitle="Pick a template, preview it, and launch fast — Basic $99 or Plus $129 (Custom Color included)."
+        subtitle="Pick a template, preview it, and launch fast — One-time $129 (includes your chosen theme A/B/C)."
         ctaLink="/contact?from=nav"
       />
     </>

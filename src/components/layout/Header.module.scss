@@ -76,3 +76,25 @@
     white-space: nowrap;
   }
 }
+
+
+/* ✅ Buy button shown on Contact when template/theme are selected */
+.buyCta {
+  background: #f5b400;
+  color: #111;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  font-weight: 800;
+  text-decoration: none;
+}
+.buyCta:hover {
+  filter: brightness(1.03);
+}
+@media (max-width: 520px) {
+  .buyCta {
+    font-size: 13px;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+}

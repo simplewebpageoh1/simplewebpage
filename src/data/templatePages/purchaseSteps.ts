@@ -2,7 +2,7 @@
 export const PURCHASE_STEPS = [
   {
     title: "Buy / Get Started",
-    desc: "Purchase the one-page template ($99 CAD one-time) and submit your business details.",
+    desc: "Purchase the one-page template ($129 CAD one-time) and submit your business details.",
   },
   {
     title: "We set it up",

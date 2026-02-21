@@ -187,6 +187,17 @@
   font-size:13px;
 }
 
+.totalRow{
+  margin-top:10px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.totalText{
+  font-weight:900;
+  font-size:14px;
+}
+
 
 /* ✅ Mobile: selection row controls should not get clipped */
 @media (max-width: 520px){
@@ -215,3 +226,21 @@
 .checkRow{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.35;color:rgba(0,0,0,0.85)}
 .checkRow input{margin-top:3px;flex:0 0 auto}
 .checkRow a{text-decoration:underline;color:inherit}
+
+
+/* Electrician dark theme overrides when coming from demo checkout */
+
+.page[data-e-theme="B"]{
+  --e-accent: #f7c948;
+  --e-accentText: #141414;
+}
+.page[data-e-theme="B"] .submitBtn{
+  background: var(--e-accent);
+  color: var(--e-accentText);
+  border-color: transparent;
+}
+.page[data-e-theme="B"] .secondaryBtn{
+  background: transparent;
+  color: #f3f4f6;
+  border-color: rgba(255,255,255,0.18);
+}

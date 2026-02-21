@@ -15,6 +15,7 @@ import CheckoutRedirect from "../pages/CheckoutRedirect/CheckoutRedirect";
 import Templates from "../pages/Templates/Templates";
 import TemplateLanding from "../pages/TemplateLanding/TemplateLanding";
 import DemoOnePage from "../pages/DemoOnePage/DemoOnePage";
+import ElectricianDemo from "../pages/ElectricianDemo/ElectricianDemo";
 import Refund from "../pages/Policies/Refund";
 import Terms from "../pages/Policies/Terms";
 import Privacy from "../pages/Policies/Privacy";
@@ -43,7 +44,10 @@ export default function AppRouter() {
       <Route path="/how-it-works" element={<HowItWorks />} />
       </Route>
 
-      {/* ✅ 데모(미리보기): Layout 없이 보여줘도 OK */}
+      {/* ✅ 데모(미리보기): 전기 템플릿(ABC) */}
+      <Route path="/demo/electrician/:variant" element={<ElectricianDemo />} />
+
+      {/* ✅ 기존 데모(구버전) */}
       <Route path="/demo/:slug" element={<DemoOnePage />} />
 
       {/* ✅ 그 외 주소는 홈으로 */}

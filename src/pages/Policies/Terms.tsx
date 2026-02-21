@@ -1,5 +1,5 @@
 // src/pages/Policies/Terms.tsx
-// ✅ 이용약관(간단 버전) - 기본 $99 범위를 명확히
+// ✅ 이용약관(간단 버전) - 기본 $129 범위를 명확히
 
 import Seo from "../../components/seo/Seo";
 import styles from "./Policies.module.scss";
@@ -18,7 +18,7 @@ export default function Terms() {
         <p className={styles.muted}>Last updated: Feb 9, 2026</p>
 
         <div className={styles.card}>
-          <h2>What you get ($99 CAD)</h2>
+          <h2>What you get ($129 CAD)</h2>
           <ul>
             <li>One-page template customization using the details you submit.</li>
             <li>Mobile-friendly layout.</li>

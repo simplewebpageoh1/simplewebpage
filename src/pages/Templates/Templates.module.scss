@@ -71,6 +71,7 @@
   align-items:center;
   justify-content:center;
   min-height:44px;
+  min-width: 220px;
   padding: var(--btn-padding-y) var(--btn-padding-x);
   border-radius: var(--btn-radius);
   text-decoration:none;
@@ -80,6 +81,10 @@
   color: inherit;
   box-shadow: var(--btn-shadow);
   transition: transform .12s ease, filter .12s ease, opacity .12s ease, background .12s ease;
+}
+
+@media (max-width: 520px){
+  .action{min-width: 100%;}
 }
 .action:hover{filter:brightness(0.98);transform:translateY(-1px);text-decoration:none}
 .buyAction{

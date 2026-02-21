@@ -12,31 +12,27 @@
     />
   </head>
   <body>
-    <!-- Netlify form detection -->
-    <form name="contact" data-netlify="true" hidden>
+    <!-- ✅ Netlify Forms detection (build-time) -->
+    <form
+      name="contact"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      hidden
+    >
       <input type="hidden" name="form-name" value="contact" />
-      <input type="text" name="name" />
-      <input type="email" name="email" />
-      <input type="text" name="message" />
-      <input type="text" name="industry" />
-      <input type="text" name="template" />
-      <input type="text" name="plan" />
-      <input type="text" name="colorId" />
-      <input type="text" name="fontId" />
-      <input type="text" name="customColor" />
-    </form>
+      <input name="bot-field" />
+      <input name="name" />
+      <input name="email" />
+      <textarea name="message"></textarea>
 
-    <form name="intake" data-netlify="true" hidden>
-      <input type="hidden" name="form-name" value="intake" />
-      <input type="text" name="businessName" />
-      <input type="text" name="tagline" />
-      <input type="text" name="serviceArea" />
-      <input type="text" name="phone" />
-      <input type="text" name="email" />
-      <input type="text" name="services" />
-      <input type="text" name="about" />
-      <input type="text" name="logoLink" />
-      <input type="text" name="notes" />
+      <!-- 선택 정보들(기록용) -->
+      <input name="industryId" />
+      <input name="industryOther" />
+      <input name="industry" />
+      <input name="template" />
+      <input name="theme" />
+      <input name="selectionSummary" />
+      <input name="selectionJson" />
     </form>
 
     <div id="root"></div>

@@ -139,18 +139,6 @@ export default function DemoOnePage() {
   if (!page) return null;
 
   const d = page.demo;
-
-  // ✅ Stripe 결제 링크 (있으면 바로 구매)
-  // ✅ Stripe payment links (optional)
-  // - If set, Buy will go to Stripe.
-  // - If not set, Buy will go to /contact with selected options.
-  const stripeLinkBasic = import.meta.env.VITE_STRIPE_PAYMENT_LINK_BASIC as
-    | string
-    | undefined;
-  const stripeLinkPlus = import.meta.env.VITE_STRIPE_PAYMENT_LINK_PLUS as
-    | string
-    | undefined;
-
   // ✅ localStorage 값을 "처음 렌더"부터 반영하기 위해 lazy init 사용
   const [planId, setPlanId] = useState<PlanId>(
     () => safeLoad()?.planId ?? "basic",
@@ -236,7 +224,7 @@ export default function DemoOnePage() {
     safeSave({ planId, colorId, customColor, fontId });
   }, [planId, colorId, customColor, fontId]);
 
-  const stripeLink = planId === "plus" ? stripeLinkPlus : stripeLinkBasic;
+  const stripeLink = undefined as string | undefined;
 
   const checkoutHref = useMemo(() => {
     const params = new URLSearchParams();
