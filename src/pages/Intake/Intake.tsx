@@ -1,11 +1,7 @@
 // src/pages/Intake/Intake.tsx
-// ✅ 구매 후 '사업 정보/문구' 제출 폼(Intake Form)
-// - Netlify Forms 사용
-
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Seo from "../../components/seo/Seo";
-import { normalizeTheme, themeLabel } from "../../lib/theme";
 import styles from "./Intake.module.scss";
 
 type AddonKey =
@@ -13,74 +9,89 @@ type AddonKey =
   | "review_request"
   | "copy_refinement"
   | "domain_connection"
-  | "extra_revisions";
+  | "additional_revisions";
+
+const ADDON_LABELS: Record<AddonKey, string> = {
+  google_business: "Google Business Profile setup (+$79)",
+  review_request: "Review request message setup (+$39)",
+  copy_refinement: "Copy refinement (+$49)",
+  domain_connection: "Domain connection — done for you (+$49)",
+  additional_revisions: "Additional revisions / small changes (+$39)",
+};
+
+function parseAddons(raw: string): AddonKey[] {
+  const list = (raw || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const allow: AddonKey[] = [
+    "google_business",
+    "review_request",
+    "copy_refinement",
+    "domain_connection",
+    "additional_revisions",
+  ];
+
+  const set = new Set<AddonKey>();
+  for (const a of list) {
+    if (allow.includes(a as AddonKey)) set.add(a as AddonKey);
+  }
+  return [...set];
+}
 
 function encode(data: Record<string, string>) {
   return Object.keys(data)
-    .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
     .join("&");
 }
 
-function parseAddons(csv: string): Set<AddonKey> {
-  const out = new Set<AddonKey>();
-  csv
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .forEach((s) => {
-      if (
-        s === "google_business" ||
-        s === "review_request" ||
-        s === "copy_refinement" ||
-        s === "domain_connection" ||
-        s === "extra_revisions"
-      ) {
-        out.add(s);
-      }
-    });
-  return out;
+async function submitToNetlifyForms(formData: Record<string, string>) {
+  const res = await fetch("/", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: encode(formData),
+  });
+  if (!res.ok) throw new Error("Netlify form submit failed");
 }
 
 export default function Intake() {
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const params = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  );
 
-  // URL params (from Stripe success_url)
   const template = params.get("template") ?? "";
-  const theme = normalizeTheme(params.get("theme"));
-  const addonsCsv = params.get("addons") ?? "";
+  const theme = (params.get("theme") ?? "A").toUpperCase();
+  const addonsRaw = params.get("addons") ?? "";
 
-  const addonsFromUrl = useMemo(() => parseAddons(addonsCsv), [addonsCsv]);
+  // ✅ checkout에서 넘어온 addons만 "읽기 전용"으로 표시
+  const addonsList = useMemo(() => parseAddons(addonsRaw), [addonsRaw]);
+  const addonsSet = useMemo(() => new Set(addonsList), [addonsList]);
 
+  const hasGoogleBusiness = addonsSet.has("google_business");
+  const hasReviewRequest = addonsSet.has("review_request");
+  const hasCopyRefinement = addonsSet.has("copy_refinement");
+  const hasDomainConnection = addonsSet.has("domain_connection");
+  const hasAdditionalRevisions = addonsSet.has("additional_revisions");
+
+  const addonsDisplay = useMemo(() => {
+    if (!addonsList.length) return "None";
+    return addonsList.map((k) => ADDON_LABELS[k]).join(" | ");
+  }, [addonsList]);
+
+  // ----- form fields
   const [businessName, setBusinessName] = useState("");
-  const [tagline, setTagline] = useState("");
-  const [serviceArea, setServiceArea] = useState("");
-  const [phone, setPhone] = useState("");
+  const [contactName, setContactName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [services, setServices] = useState("");
   const [about, setAbout] = useState("");
   const [logoLink, setLogoLink] = useState("");
   const [notes, setNotes] = useState("");
   const [layoutOrderRequest, setLayoutOrderRequest] = useState("");
-
-  // ✅ Add-ons (reflect what was paid)
-  const [addonCopywriting, setAddonCopywriting] = useState(false);
-  const [addonDomainConnection, setAddonDomainConnection] = useState(false);
-  const [addonExtraRevisions, setAddonExtraRevisions] = useState(false);
-  const [addonGoogleBusiness, setAddonGoogleBusiness] = useState(false);
-  const [addonReviewRequest, setAddonReviewRequest] = useState(false);
-
-  useEffect(() => {
-    // ✅ Pre-check paid add-ons.
-    // If the user already checked something (true), keep it.
-    // If checkout URL says it was purchased, ensure it becomes checked.
-    setAddonGoogleBusiness((v) => v || addonsFromUrl.has("google_business"));
-    setAddonReviewRequest((v) => v || addonsFromUrl.has("review_request"));
-    setAddonCopywriting((v) => v || addonsFromUrl.has("copy_refinement"));
-    setAddonDomainConnection((v) => v || addonsFromUrl.has("domain_connection"));
-    setAddonExtraRevisions((v) => v || addonsFromUrl.has("extra_revisions"));
-  }, [addonsFromUrl]);
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -89,271 +100,267 @@ export default function Intake() {
     if (submitting) return;
     setSubmitting(true);
 
-    const formData: Record<string, string> = {
-      "form-name": "intake",
-      template,
-      theme,
-      addons: addonsCsv,
-      businessName,
-      tagline,
-      serviceArea,
-      phone,
-      email,
-      services,
-      about,
-      logoLink,
-      notes,
-      layoutOrderRequest,
-
-      addonCopywriting: addonCopywriting ? "yes" : "no",
-      addonDomainConnection: addonDomainConnection ? "yes" : "no",
-      addonExtraRevisions: addonExtraRevisions ? "yes" : "no",
-      addonGoogleBusiness: addonGoogleBusiness ? "yes" : "no",
-      addonReviewRequest: addonReviewRequest ? "yes" : "no",
-    };
-
     try {
-      const res = await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: encode(formData),
-      });
+      const netlifyFormData: Record<string, string> = {
+        "form-name": "intake",
 
-      if (!res.ok) throw new Error("Intake submit failed");
+        template,
+        theme,
+        addons: addonsList.join(","),
 
-      // 제출 후 Thank You로
-      const ty = new URLSearchParams();
-      ty.set("paid", "true");
-      if (template) ty.set("template", template);
-      ty.set("theme", theme);
-      if (addonsCsv) ty.set("addons", addonsCsv);
-      navigate(`/thank-you?${ty.toString()}`);
+        businessName,
+        contactName,
+        email,
+        phone,
+        services,
+        about,
+        logoLink,
+        notes,
+        layoutOrderRequest,
+
+        // ✅ 체크아웃에서 결제된 addons 상태(읽기 전용 표시값)도 저장
+        addon_google_business: hasGoogleBusiness ? "yes" : "no",
+        addon_review_request: hasReviewRequest ? "yes" : "no",
+        addon_copy_refinement: hasCopyRefinement ? "yes" : "no",
+        addon_domain_connection: hasDomainConnection ? "yes" : "no",
+        addon_additional_revisions: hasAdditionalRevisions ? "yes" : "no",
+
+        addonsDisplay,
+      };
+
+      await submitToNetlifyForms(netlifyFormData);
+
+      // ✅ Intake 제출 후 ThankYou로 이동
+      // paid=1은 유지하되 from=intake를 붙여서 ThankYou가 Intake로 다시 리다이렉트 하지 않게 함
+      const qs = new URLSearchParams();
+      if (template) qs.set("template", template);
+      if (theme) qs.set("theme", theme);
+      if (addonsList.length) qs.set("addons", addonsList.join(","));
+      qs.set("paid", "1");
+      qs.set("from", "intake");
+
+      navigate(`/thank-you?${qs.toString()}`);
     } catch (err) {
-      alert("Submission failed. Please try again.");
       console.error(err);
+      alert("Submit failed. Please try again.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <main className={styles.page}>
+    <>
       <Seo
-        title="Website Setup Form | Submit Your Business Info"
-        description="Submit your business info to set up your one-page website template."
+        title="Setup Form | SimpleWebPageOH"
+        description="Tell us what to put on your one-page website."
         path="/intake"
       />
 
-      <div className="container">
-        <h1 className={styles.title}>Website setup form</h1>
-        <p className={styles.subtitle}>
-          Fill this out once — it helps us build your website faster.
-        </p>
+      <main className={styles.page}>
+        <div className="container">
+          <h1 className={styles.title}>Setup Form</h1>
 
-        <div className={styles.badgeRow}>
-          {template ? (
-            <span className={styles.badge}>
-              Template: <strong>{template}</strong>
-            </span>
-          ) : null}
-          <span className={styles.badge}>
-            Theme: <strong>{themeLabel(theme)}</strong>
-          </span>
-        </div>
-
-        {!template ? (
-          <div className={styles.notice}>
-            Missing template info. Please go back to Templates and start from checkout.
-          </div>
-        ) : null}
-
-        <form
-          name="intake"
-          method="POST"
-          data-netlify="true"
-          netlify-honeypot="bot-field"
-          onSubmit={handleSubmit}
-        >
-          <input type="hidden" name="form-name" value="intake" />
-
-          {/* honeypot */}
-          <p style={{ display: "none" }}>
-            <label>
-              Don’t fill this out if you're human: <input name="bot-field" />
-            </label>
-          </p>
-
-          <label className={styles.label}>
-            Business name
-            <input
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              required
-              placeholder="e.g., ABC Electric"
-            />
-          </label>
-
-          <label className={styles.label}>
-            Tagline (short)
-            <input
-              value={tagline}
-              onChange={(e) => setTagline(e.target.value)}
-              placeholder="e.g., Licensed · Insured · Fast response"
-            />
-          </label>
-
-          <label className={styles.label}>
-            Service area
-            <input
-              value={serviceArea}
-              onChange={(e) => {
-                const v = e.target.value;
-                setServiceArea(v);
-                try {
-                  localStorage.setItem("intake:serviceArea", v);
-                } catch {
-                  // ignore
-                }
-              }}
-              required
-              placeholder="e.g., Calgary, Airdrie, Okotoks"
-            />
-          </label>
-
-          <div className={styles.row2}>
-            <label className={styles.label}>
-              Phone
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                placeholder="e.g., 403-123-4567"
-              />
-            </label>
-
-            <label className={styles.label}>
-              Email
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="e.g., info@simplewebpageoh.com"
-              />
-            </label>
+          <div className={styles.summary}>
+            <div>
+              <strong>Template:</strong> {template || "—"}
+            </div>
+            <div>
+              <strong>Theme:</strong> {theme || "—"}
+            </div>
+            <div>
+              <strong>Add-ons (paid):</strong> {addonsDisplay}
+            </div>
           </div>
 
-          <label className={styles.label}>
-            Services (list)
-            <textarea
-              value={services}
-              onChange={(e) => setServices(e.target.value)}
-              required
-              rows={6}
-              placeholder={"Example:\n- Panel upgrades\n- Lighting\n- EV charger installs"}
-            />
-          </label>
-
-          {/* Add-ons */}
-          <div className={styles.addonsBlock}>
-            <div className={styles.addonsTitle}>Add-ons</div>
-            <p className={styles.addonsHint}>
-              If you selected add-ons at checkout, they should already be checked here.
+          {/* ✅ Netlify가 폼을 “인식”하도록 */}
+          <form
+            className={styles.form}
+            name="intake"
+            method="POST"
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
+            onSubmit={handleSubmit}
+          >
+            <input type="hidden" name="form-name" value="intake" />
+            <p style={{ display: "none" }}>
+              <label>
+                Don’t fill this out if you're human: <input name="bot-field" />
+              </label>
             </p>
 
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonGoogleBusiness"
-                checked={addonGoogleBusiness}
-                onChange={(e) => setAddonGoogleBusiness(e.target.checked)}
+            {/* 쿼리 전달값도 hidden으로 남겨두면 Netlify record 보기 편함 */}
+            <input type="hidden" name="template" value={template} />
+            <input type="hidden" name="theme" value={theme} />
+            <input type="hidden" name="addons" value={addonsList.join(",")} />
+            <input type="hidden" name="addonsDisplay" value={addonsDisplay} />
+
+            <div className={styles.row2}>
+              <label className={styles.label}>
+                Business name
+                <input
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  required
+                  placeholder="e.g., ABC Electric"
+                />
+              </label>
+
+              <label className={styles.label}>
+                Contact name
+                <input
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  required
+                  placeholder="Your name"
+                />
+              </label>
+            </div>
+
+            <div className={styles.row2}>
+              <label className={styles.label}>
+                Email
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="e.g., young@simplewebpageoh.com"
+                />
+              </label>
+
+              <label className={styles.label}>
+                Phone
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g., (403) 000-0000"
+                />
+              </label>
+            </div>
+
+            <label className={styles.label}>
+              Services (list)
+              <textarea
+                value={services}
+                onChange={(e) => setServices(e.target.value)}
+                required
+                rows={6}
+                placeholder={
+                  "Example:\n- Panel upgrades\n- Lighting\n- EV charger installs"
+                }
               />
-              <span>Google Business Profile setup (+$79)</span>
             </label>
 
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonReviewRequest"
-                checked={addonReviewRequest}
-                onChange={(e) => setAddonReviewRequest(e.target.checked)}
+            {/* ✅ Add-ons (읽기 전용 표시만) */}
+            <div className={styles.addonsBlock}>
+              <div className={styles.addonsTitle}>Add-ons (paid)</div>
+              <p className={styles.addonsHint}>
+                These are selected at checkout. (Read-only for now)
+              </p>
+
+              <label className={styles.checkRow}>
+                <input
+                  type="checkbox"
+                  name="addon_google_business"
+                  checked={hasGoogleBusiness}
+                  readOnly
+                  disabled
+                />
+                <span>{ADDON_LABELS.google_business}</span>
+              </label>
+
+              <label className={styles.checkRow}>
+                <input
+                  type="checkbox"
+                  name="addon_review_request"
+                  checked={hasReviewRequest}
+                  readOnly
+                  disabled
+                />
+                <span>{ADDON_LABELS.review_request}</span>
+              </label>
+
+              <label className={styles.checkRow}>
+                <input
+                  type="checkbox"
+                  name="addon_copy_refinement"
+                  checked={hasCopyRefinement}
+                  readOnly
+                  disabled
+                />
+                <span>{ADDON_LABELS.copy_refinement}</span>
+              </label>
+
+              <label className={styles.checkRow}>
+                <input
+                  type="checkbox"
+                  name="addon_domain_connection"
+                  checked={hasDomainConnection}
+                  readOnly
+                  disabled
+                />
+                <span>{ADDON_LABELS.domain_connection}</span>
+              </label>
+
+              <label className={styles.checkRow}>
+                <input
+                  type="checkbox"
+                  name="addon_additional_revisions"
+                  checked={hasAdditionalRevisions}
+                  readOnly
+                  disabled
+                />
+                <span>{ADDON_LABELS.additional_revisions}</span>
+              </label>
+            </div>
+
+            <label className={styles.label}>
+              About (2–5 sentences)
+              <textarea
+                value={about}
+                onChange={(e) => setAbout(e.target.value)}
+                rows={6}
+                placeholder="Tell customers who you are and what you do."
               />
-              <span>Review request message setup (+$39)</span>
             </label>
 
-            <label className={styles.checkRow}>
+            <label className={styles.label}>
+              Logo link (optional)
               <input
-                type="checkbox"
-                name="addonCopywriting"
-                checked={addonCopywriting}
-                onChange={(e) => setAddonCopywriting(e.target.checked)}
+                value={logoLink}
+                onChange={(e) => setLogoLink(e.target.value)}
+                placeholder="Paste a link to your logo (Google Drive/Dropbox/etc.)"
               />
-              <span>Copy refinement (+$49)</span>
             </label>
 
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                name="addonDomainConnection"
-                checked={addonDomainConnection}
-                onChange={(e) => setAddonDomainConnection(e.target.checked)}
+            <label className={styles.label}>
+              Notes (optional)
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={5}
+                placeholder="Anything else we should know?"
               />
-              <span>Domain connection — done for you (+$49)</span>
             </label>
 
-            <label className={styles.checkRow}>
+            <label className={styles.label}>
+              Layout order request (optional)
               <input
-                type="checkbox"
-                name="addonExtraRevisions"
-                checked={addonExtraRevisions}
-                onChange={(e) => setAddonExtraRevisions(e.target.checked)}
+                value={layoutOrderRequest}
+                onChange={(e) => setLayoutOrderRequest(e.target.value)}
+                placeholder="e.g., hero > services > about > contact"
               />
-              <span>Additional revisions / small changes (+$39)</span>
             </label>
-          </div>
 
-          <label className={styles.label}>
-            About (2–5 sentences)
-            <textarea
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-              rows={6}
-              placeholder="Tell customers who you are and what you do."
-            />
-          </label>
-
-          <label className={styles.label}>
-            Logo link (optional)
-            <input
-              value={logoLink}
-              onChange={(e) => setLogoLink(e.target.value)}
-              placeholder="Paste a link to your logo (Google Drive/Dropbox/etc.)"
-            />
-          </label>
-
-          <label className={styles.label}>
-            Notes (optional)
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={5}
-              placeholder="Anything else we should know?"
-            />
-          </label>
-
-          <label className={styles.label}>
-            Layout order request (optional)
-            <input
-              value={layoutOrderRequest}
-              onChange={(e) => setLayoutOrderRequest(e.target.value)}
-              placeholder="e.g., hero > services > about > contact"
-            />
-          </label>
-
-          <button className={styles.submit} type="submit" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit"}
-          </button>
-        </form>
-      </div>
-    </main>
+            <button
+              className={styles.submit}
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting ? "Submitting..." : "Submit"}
+            </button>
+          </form>
+        </div>
+      </main>
+    </>
   );
 }

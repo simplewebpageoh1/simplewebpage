@@ -4,7 +4,10 @@ import Seo from "../../components/seo/Seo";
 
 export default function ThankYou() {
   const location = useLocation();
-  const params = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const params = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  );
 
   const template = params.get("template") ?? "";
   const theme = (params.get("theme") ?? "A").toUpperCase();
@@ -15,12 +18,12 @@ export default function ThankYou() {
 
   const from = (params.get("from") ?? "").toLowerCase();
   const isFromContact = from === "contact";
+  const isFromIntake = from === "intake";
 
   const checkoutUrl = useMemo(() => {
     const u = new URL("/checkout", window.location.origin);
     if (template) u.searchParams.set("template", template);
     if (theme) u.searchParams.set("theme", theme);
-    // Contact is lead-only: Add-ons are selected in Checkout
     return u.pathname + u.search;
   }, [template, theme]);
 
@@ -32,18 +35,33 @@ export default function ThankYou() {
     return u.pathname + u.search;
   }, [template, theme, addons]);
 
+  // ✅ 결제 직후(Stripe success)일 때만 Intake로 자동 이동
+  // ✅ Intake 제출 후 ThankYou로 온 경우(from=intake)는 자동 이동 금지 (루프 방지)
   useEffect(() => {
     if (!isPaid) return;
+    if (isFromIntake) return;
+
     const t = window.setTimeout(() => {
       window.location.href = intakeUrl;
     }, 2500);
-    return () => window.clearTimeout(t);
-  }, [isPaid, intakeUrl]);
 
-  const pageTitle = isPaid ? "Order Confirmed | SimpleWebPageOH" : "Thank You | SimpleWebPageOH";
-  const headline = isPaid ? "Order confirmed 🎉" : "Message received ✅";
+    return () => window.clearTimeout(t);
+  }, [isPaid, isFromIntake, intakeUrl]);
+
+  const pageTitle = isPaid
+    ? "Order Confirmed | SimpleWebPageOH"
+    : "Thank You | SimpleWebPageOH";
+
+  const headline = isPaid
+    ? isFromIntake
+      ? "Setup form submitted ✅"
+      : "Order confirmed 🎉"
+    : "Message received ✅";
+
   const intro = isPaid
-    ? "Payment received. Next, please fill out the setup form to start building your site."
+    ? isFromIntake
+      ? "Thanks! We received your setup details. We’ll review and contact you within 24 hours."
+      : "Payment received. Next, please fill out the setup form to start building your site."
     : "Thanks for reaching out. We’ll reply within 24 hours.";
 
   return (
@@ -57,7 +75,9 @@ export default function ThankYou() {
       <main style={{ padding: 48 }}>
         <div className="container">
           <h1>{headline}</h1>
-          <p style={{ marginTop: 12, opacity: 0.9, lineHeight: 1.6 }}>{intro}</p>
+          <p style={{ marginTop: 12, opacity: 0.9, lineHeight: 1.6 }}>
+            {intro}
+          </p>
 
           {!isPaid && !isFromContact && (
             <div
@@ -70,7 +90,8 @@ export default function ThankYou() {
                 lineHeight: 1.65,
               }}
             >
-              If you haven&apos;t paid yet, please go to checkout from the Templates page.
+              If you haven&apos;t paid yet, please go to checkout from the
+              Templates page.
             </div>
           )}
 
@@ -106,16 +127,30 @@ export default function ThankYou() {
             <ul style={{ margin: "8px 0 0 18px" }}>
               <li>
                 {isPaid
-                  ? "Complete the setup (Intake) form so we can build your site."
+                  ? isFromIntake
+                    ? "We’ll review your setup details and contact you by email."
+                    : "Complete the setup (Intake) form so we can build your site."
                   : "Preview templates and complete checkout to start."}
               </li>
-              <li>We’ll review your information within <strong>24 hours</strong>.</li>
-              <li>Your site will <strong>go live within 24–48 hours</strong> after review.</li>
+              <li>
+                We’ll review your information within <strong>24 hours</strong>.
+              </li>
+              <li>
+                Your site will <strong>go live within 24–48 hours</strong> after
+                review.
+              </li>
               <li>You’ll receive an email once your site is live.</li>
             </ul>
           </div>
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 18 }}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12,
+              marginTop: 18,
+            }}
+          >
             {isPaid && (
               <Link
                 to={intakeUrl}
