@@ -164,6 +164,10 @@ export default function DemoOnePage() {
       : "desktop";
   });
 
+  // ✅ manual override flag for Desktop/Mobile buttons
+  const [previewTouched, setPreviewTouched] = useState(false);
+
+
   // ✅ "모바일" 기준(<=640px)
   // - Buy 하단 고정바, 옵션 패널 오버레이 등은 실제 화면 폭 기준으로 동작
   const [isMobileUi, setIsMobileUi] = useState<boolean>(() => {
@@ -187,6 +191,20 @@ export default function DemoOnePage() {
       else anyMq.removeListener(onChange);
     };
   }, []);
+
+
+  // ✅ Auto-switch preview mode when viewport crosses the mobile breakpoint
+  // - Helps Chrome/Firefox responsive mode and real mobile devices.
+  // - If user manually selects a view on mobile, we respect it.
+  useEffect(() => {
+    if (!previewTouched) {
+      setPreviewMode(isMobileUi ? "mobile" : "desktop");
+      return;
+    }
+    // When returning to desktop width, release the manual lock.
+    if (!isMobileUi) setPreviewTouched(false);
+  }, [isMobileUi, previewTouched]);
+
 
   // ✅ 옵션 패널이 열리면(모바일 UI) body 스크롤을 잠금
   // - 모바일에서 옵션 패널 내부가 먼저 스크롤되게 하기 위함
@@ -418,14 +436,14 @@ export default function DemoOnePage() {
                   <button
                     type="button"
                     className={`${styles.pill} ${previewMode === "desktop" ? styles.active : ""}`}
-                    onClick={() => setPreviewMode("desktop")}
+                    onClick={() => { setPreviewTouched(true); setPreviewMode("desktop"); }}
                   >
                     Desktop
                   </button>
                   <button
                     type="button"
                     className={`${styles.pill} ${previewMode === "mobile" ? styles.active : ""}`}
-                    onClick={() => setPreviewMode("mobile")}
+                    onClick={() => { setPreviewTouched(true); setPreviewMode("mobile"); }}
                   >
                     Mobile
                   </button>

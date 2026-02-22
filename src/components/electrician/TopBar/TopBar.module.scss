@@ -28,3 +28,28 @@
 @media (max-width: 860px){
   .brand{display:none;}
 }
+
+@media (max-width: 640px){
+  .wrap{ overflow-x: hidden; }
+  .inner{
+    height: auto;
+    padding: 10px 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .right{
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .tabs{
+    flex: 1 1 auto;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab{ flex: 0 0 auto; white-space: nowrap; }
+  .buy{ flex: 0 0 auto; white-space: nowrap; }
+}
