@@ -4,12 +4,14 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import styles from "./Header.module.scss";
 import { normalizeTheme } from "../../lib/theme";
+import { HEADER_PRIMARY_CTA } from "../../config/ui";
 
 export default function Header() {
   const location = useLocation();
 
   const params = new URLSearchParams(location.search);
   const isContact = location.pathname === "/contact";
+  const isCheckout = location.pathname === "/checkout";
   const contactTo = isContact ? `/contact${location.search}` : "/contact?from=nav";
 
   // ✅ If user came to Contact from a demo (template/theme selected), show a Buy button in header
@@ -23,6 +25,16 @@ export default function Header() {
           selectedTheme,
         )}${addons ? `&addons=${encodeURIComponent(addons)}` : ""}`
       : "";
+
+  const hasSelection = Boolean(checkoutTo);
+  const primaryIsCheckout = HEADER_PRIMARY_CTA === "checkout";
+
+  // ✅ Option A: prevent duplicate "Contact" in nav.
+  // If primary CTA is configured as Checkout but we DON'T have a selection,
+  // the CTA falls back to Contact. In that case, we should not also show a
+  // secondary Contact link.
+  const primaryCtaKind: "checkout" | "contact" =
+    primaryIsCheckout && hasSelection ? "checkout" : "contact";
 
 
   return (
@@ -42,28 +54,47 @@ export default function Header() {
             Templates
           </NavLink>
 
-          {/* ✅ CTA: 기본은 Contact, 선택값이 있으면 Contact/Intake에서 Buy로 표시 */}
-          {isContact && checkoutTo ? (
-            <a href={checkoutTo} className={styles.buyCta}>
-              Go to Checkout
+          {/*
+            ✅ CTA policy
+            - Keep only ONE "primary" CTA in the header (better mobile UX).
+            - When selection exists (template+theme), allow Checkout.
+          */}
+
+          {/* Secondary link (non-primary) */}
+          {primaryCtaKind === "checkout" ? (
+            <NavLink to={contactTo} className={styles.link}>
+              Contact
+            </NavLink>
+          ) : hasSelection ? (
+            <a href={checkoutTo} className={styles.link}>
+              Checkout
             </a>
           ) : null}
 
-          <NavLink
-            to={contactTo}
-            className={styles.cta}
-            onClick={() => {
-              // ✅ nav에서 Contact를 눌러 새 문의 흐름으로 시작할 때만 초기화
-              try {
-                localStorage.removeItem("demoOrderDraft:v1");
-                sessionStorage.removeItem("orderFlow:fromDemo");
-              } catch {
-                // ignore
-              }
-            }}
-          >
-            Contact
-          </NavLink>
+          {/* Primary CTA */}
+          {!isCheckout && (
+          primaryCtaKind === "checkout" ? (
+            <a href={checkoutTo} className={styles.cta}>
+              Checkout
+            </a>
+          ) : (
+            <NavLink
+              to={contactTo}
+              className={styles.cta}
+              onClick={() => {
+                // ✅ CTA Contact를 눌러 새 문의 흐름으로 시작할 때만 초기화
+                try {
+                  localStorage.removeItem("demoOrderDraft:v1");
+                  sessionStorage.removeItem("orderFlow:fromDemo");
+                } catch {
+                  // ignore
+                }
+              }}
+            >
+              Contact
+            </NavLink>
+          )
+          )}
         </nav>
       </div>
     </header>

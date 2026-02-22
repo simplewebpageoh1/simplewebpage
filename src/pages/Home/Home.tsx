@@ -26,48 +26,48 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="Professional Website Built for You in 48 Hours — Just $129"
-        description="Simple one-page websites for local service businesses in Canada. One-time payment. No subscriptions. Live in 24–48 hours."
+        title="Launch Your Website in 24–48 Hours — $129 One-Time"
+        description="One-page websites for local service businesses in Canada. One-time $129. No subscriptions. Ready in 24–48 hours."
         path="/"
       />
       <Hero
-        title="Professional Website Built for You in 48 Hours — Just $129"
-        subtitle={`No tech stress, no monthly fees.
-Just send us your details, and we’ll handle the build and publishing for you.`}
-        primaryCtaText="View Templates"
+        title="Launch Your Website in 24–48 Hours — $129 One-Time"
+        subtitle={`One payment. No monthly fees.
+Send your details—we build and publish it for you.`}
+        primaryCtaText="Templates"
         primaryCtaLink="/templates"
-        secondaryCtaText="Get Started"
+        secondaryCtaText="Contact"
         // ✅ Home에서 바로 Contact로 갈 때는 '새 문의'로 처리
         secondaryCtaLink="/contact?from=nav"
       />
 
       <Services
-        heading="What’s Included"
+        heading="What You Get"
         items={[
           {
-            title: "Template-Based Website Build",
+            title: "One-Page Website",
             description:
-              "We build your website using our optimized one-page layout. Clean, mobile-friendly, and designed for service businesses.",
+              "We build a clean one-page site that works great on phones and desktops.",
           },
           {
-            title: "Fast Setup Process",
+            title: "Fast Turnaround",
             description:
-              "After checkout, complete a short intake form. We generate and structure your content, then send you a preview link.",
+              "After checkout, fill a short form. You get a preview link in 24–48 hours.",
           },
           {
-            title: "1 Round of Small Text Edits",
+            title: "1 Round of Edits",
             description:
-              "Includes one revision for minor text updates before final delivery.",
+              "One round of small text changes before we finalize.",
           },
           {
-            title: "SEO Basics Included",
+            title: "Google Basics",
             description:
-              "Title and description setup for better visibility on Google.",
+              "We set your page title & description so Google can understand your site.",
           },
           {
-            title: "You Own the Site",
+            title: "You Own It",
             description:
-              "Stop paying monthly rent for your website. No monthly builder fees. Host on Netlify and pay only for your domain.",
+              "No monthly website builder fees. You keep the site and only pay for your domain.",
           },
         ]}
       />
@@ -77,8 +77,8 @@ Just send us your details, and we’ll handle the build and publishing for you.`
       <Pricing />
 
       <ContactCTA
-        title="Ready to launch a simple one-page website?"
-        subtitle="Pick a template, preview it, and launch fast — One-time $129 (includes your chosen theme A/B/C)."
+        title="Ready to launch?"
+        subtitle="Pick a template, preview it, and checkout when you’re ready — $129 one-time."
         ctaLink="/contact?from=nav"
       />
     </>

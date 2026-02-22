@@ -12,7 +12,7 @@ import { trackEvent } from "../../utils/analytics";
 const ELECTRICIAN = {
   slug: "electrician",
   title: "Electrician (One Page)",
-  desc: "Professional one-page template for electricians with 3 design themes.",
+  desc: "One-page website template for electricians with 3 themes (A/B/C).",
   themes: [
     { id: "A", label: "A (Black&White)" },
     { id: "B", label: "B (Dark Mode)" },

@@ -9,29 +9,27 @@ export default function Pricing() {
   return (
     <section className={styles.pricing}>
       <div className="container">
-        <h2 className={styles.title}>Pricing</h2>
+        <h2 className={styles.title}>One-Time Price</h2>
         <p className={styles.subtitle}>
-          One-time price for a professional one-page website. No monthly website builder
-          fees.
+          One-time $129 for a one-page website. No subscriptions.
         </p>
 
         <div className={styles.grid}>
           <div className={styles.card}>
-            <div className={styles.planName}>One-page Template</div>
+            <div className={styles.planName}>One-Page Website</div>
             <div className={styles.price}>$129 CAD</div>
 
             <ul className={styles.list}>
-              <li>Choose an industry + Theme A/B/C</li>
-              <li>Clean, mobile-friendly design</li>
+              <li>Choose an industry + theme A/B/C</li>
+              <li>Looks great on mobile & desktop</li>
               <li>SEO title &amp; description setup</li>
-              <li>Netlify preview link</li>
+              <li>Preview link included</li>
               <li>1 round of small text edits</li>
-              <li>Domain &amp; hosting guide PDF</li>
+              <li>Domain &amp; hosting guide</li>
             </ul>
 
             <p className={styles.note} style={{ marginTop: 10 }}>
-              <strong>Not included:</strong> Major layout changes, logo design, and full
-              copywriting.
+              <strong>Not included:</strong> Major layout changes, logo design, full copywriting.
             </p>
 
             <div className={styles.btnRow}>
@@ -44,7 +42,7 @@ export default function Pricing() {
                   })
                 }
               >
-                Preview Templates
+                Preview
               </Link>
               <Link
                 to="/checkout?template=electrician&theme=A"
@@ -56,13 +54,12 @@ export default function Pricing() {
                   });
                 }}
               >
-                Buy ($129)
+                Buy $129
               </Link>
             </div>
 
             <p className={styles.finePrint}>
-              Optional add-ons (Google Business, domain connection, copy refinement) can be
-              selected at checkout.
+              Optional add-ons can be selected at checkout.
             </p>
           </div>
         </div>
