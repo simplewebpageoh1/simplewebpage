@@ -34,6 +34,35 @@
       <input name="selectionSummary" />
       <input name="selectionJson" />
     </form>
+    <!-- ✅ Netlify Forms detection (build-time) - intake -->
+    <form name="intake" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="intake" />
+      <input name="bot-field" />
+
+      <input name="template" />
+      <input name="theme" />
+      <input name="addons" />
+
+      <input name="businessName" />
+      <input name="contactName" />
+      <input name="email" />
+      <input name="phone" />
+
+      <textarea name="services"></textarea>
+      <textarea name="about"></textarea>
+
+      <input name="logoLink" />
+      <textarea name="notes"></textarea>
+      <input name="layoutOrderRequest" />
+
+      <input name="addon_google_business" />
+      <input name="addon_review_request" />
+      <input name="addon_copy_refinement" />
+      <input name="addon_domain_connection" />
+      <input name="addon_additional_revisions" />
+
+      <input name="addonsDisplay" />
+    </form>
 
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
