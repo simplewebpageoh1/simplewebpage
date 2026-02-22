@@ -1,5 +1,5 @@
 // src/router/AppRouter.tsx
-// ✅ 라우팅 구성(99불 원페이지 템플릿 판매용)
+// ✅ 라우팅 구성129불 원페이지 템플릿 판매용)
 // - 유입용(SEO) 페이지: /templates/:slug
 // - 데모(미리보기) 페이지: /demo/:slug (한 페이지 스크롤 체험)
 
@@ -37,11 +37,11 @@ export default function AppRouter() {
         <Route path="/intake" element={<Intake />} />
         <Route path="/thank-you" element={<ThankYou />} />
 
-      {/* ✅ 정책 페이지(분쟁/오해 감소) */}
-      <Route path="/refund" element={<Refund />} />
-      <Route path="/terms" element={<Terms />} />
-      <Route path="/privacy" element={<Privacy />} />
-      <Route path="/how-it-works" element={<HowItWorks />} />
+        {/* ✅ 정책 페이지(분쟁/오해 감소) */}
+        <Route path="/refund" element={<Refund />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
       </Route>
 
       {/* ✅ 데모(미리보기): 전기 템플릿(ABC) */}

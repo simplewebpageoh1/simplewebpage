@@ -1,6 +1,6 @@
 // src/components/sections/Compare/Compare.tsx
 // ✅ Compare 섹션
-// - 99불 원페이지 템플릿 컨셉에 맞게 문구 수정
+// - 129불 원페이지 템플릿 컨셉에 맞게 문구 수정
 
 import styles from "./Compare.module.scss";
 
@@ -33,7 +33,8 @@ export default function Compare({
               <h3>
                 Website builder platforms{" "}
                 <span style={{ fontWeight: "normal" }}>
-                  (Wix, GoDaddy, Squarespace, Weebly, Shopify, WordPress.com, Webflow)
+                  (Wix, GoDaddy, Squarespace, Weebly, Shopify, WordPress.com,
+                  Webflow)
                 </span>
               </h3>
               <ul>
@@ -54,7 +55,8 @@ export default function Compare({
           </div>
 
           <p className={styles.note}>
-            <strong>Not ideal for:</strong> large online stores or complex web apps.
+            <strong>Not ideal for:</strong> large online stores or complex web
+            apps.
           </p>
         </div>
       </div>
