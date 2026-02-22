@@ -156,8 +156,13 @@ export default function DemoOnePage() {
   // ✅ Colors/Fonts 패널: 필요할 때만 열어보기
   const [controlsOpen, setControlsOpen] = useState<boolean>(false);
 
-  // ✅ Preview mode (desktop/mobile)
-  const [previewMode, setPreviewMode] = useState<PreviewMode>("desktop");
+  // ✅ 모바일이면 자동으로 mobile preview 강제
+  const [previewMode, setPreviewMode] = useState<PreviewMode>(() => {
+    if (typeof window === "undefined") return "desktop";
+    return window.matchMedia("(max-width: 640px)").matches
+      ? "mobile"
+      : "desktop";
+  });
 
   // ✅ "모바일" 기준(<=640px)
   // - Buy 하단 고정바, 옵션 패널 오버레이 등은 실제 화면 폭 기준으로 동작
@@ -405,26 +410,28 @@ export default function DemoOnePage() {
               </div>
             </div>
 
-            {/* View */}
-            <div className={styles.group}>
-              <div className={styles.groupTitle}>View</div>
-              <div className={styles.btnRow}>
-                <button
-                  type="button"
-                  className={`${styles.pill} ${previewMode === "desktop" ? styles.active : ""}`}
-                  onClick={() => setPreviewMode("desktop")}
-                >
-                  Desktop
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.pill} ${previewMode === "mobile" ? styles.active : ""}`}
-                  onClick={() => setPreviewMode("mobile")}
-                >
-                  Mobile
-                </button>
+            {/* View - 모바일에서는 숨김 */}
+            {!isMobileUi && (
+              <div className={styles.group}>
+                <div className={styles.groupTitle}>View</div>
+                <div className={styles.btnRow}>
+                  <button
+                    type="button"
+                    className={`${styles.pill} ${previewMode === "desktop" ? styles.active : ""}`}
+                    onClick={() => setPreviewMode("desktop")}
+                  >
+                    Desktop
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.pill} ${previewMode === "mobile" ? styles.active : ""}`}
+                    onClick={() => setPreviewMode("mobile")}
+                  >
+                    Mobile
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Colors */}
             <div className={styles.group}>
