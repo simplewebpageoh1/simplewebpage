@@ -12,12 +12,18 @@ export default function Header() {
   const params = new URLSearchParams(location.search);
   const isContact = location.pathname === "/contact";
   const isCheckout = location.pathname === "/checkout";
+  const isIntake = location.pathname === "/intake";
   // ✅ ThankYou page can be /thankyou or /thank-you (legacy)
   const isThankYou =
     location.pathname === "/thankyou" ||
     location.pathname === "/thank-you" ||
     location.pathname.startsWith("/thankyou/") ||
     location.pathname.startsWith("/thank-you/");
+
+  // ✅ On these steps, the user is already in (or after) the purchase flow.
+  // Remove *all* Checkout UI (both the primary CTA button and any secondary
+  // Checkout link) to avoid confusion like "Do I need to pay again?".
+  const hideCheckoutUI = isCheckout || isThankYou || isIntake;
   const contactTo = isContact ? `/contact${location.search}` : "/contact?from=nav";
 
   // ✅ If user came to Contact from a demo (template/theme selected), show a Buy button in header
@@ -66,8 +72,15 @@ export default function Header() {
             - When selection exists (template+theme), allow Checkout.
           */}
 
-          {/* Secondary link (non-primary) */}
-          {primaryCtaKind === "checkout" ? (
+          {/* Secondary link (non-primary)
+              - Normal pages: keep the "Option A" logic to avoid duplicate Contact.
+              - Checkout/ThankYou/Intake: remove *all* Checkout UI completely.
+          */}
+          {hideCheckoutUI ? (
+            <NavLink to={contactTo} className={styles.link}>
+              Contact
+            </NavLink>
+          ) : primaryCtaKind === "checkout" ? (
             <NavLink to={contactTo} className={styles.link}>
               Contact
             </NavLink>
@@ -77,8 +90,8 @@ export default function Header() {
             </a>
           ) : null}
 
-          {/* Primary CTA (hide on Checkout + ThankYou pages) */}
-          {!isCheckout && !isThankYou && (
+          {/* Primary CTA (hide on Checkout + ThankYou + Intake pages) */}
+          {!hideCheckoutUI && (
           primaryCtaKind === "checkout" ? (
             <a href={checkoutTo} className={styles.cta}>
               Checkout
