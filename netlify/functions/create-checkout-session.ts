@@ -1,10 +1,14 @@
+/// <reference types="node" />
+
 // netlify/functions/create-checkout-session.ts
 type AddonKey =
   | "google_business"
   | "review_request"
   | "copy_refinement"
   | "domain_connection"
-  | "additional_revisions";
+  | "additional_revisions"
+  // ✅ 프론트에서 잘못 보내는 키도 받아주기(호환)
+  | "extra_revisions";
 
 const ADDONS: Record<AddonKey, { label: string; amountCad: number }> = {
   google_business: {
@@ -20,7 +24,15 @@ const ADDONS: Record<AddonKey, { label: string; amountCad: number }> = {
     label: "Domain connection — done for you (Add-on)",
     amountCad: 49,
   },
+
+  // ✅ 정식 키
   additional_revisions: {
+    label: "Additional revisions / small changes (Add-on)",
+    amountCad: 39,
+  },
+
+  // ✅ 과거/프론트 오타 키 (같은 금액으로 매핑)
+  extra_revisions: {
     label: "Additional revisions / small changes (Add-on)",
     amountCad: 39,
   },
@@ -31,25 +43,29 @@ function cadToCents(n: number) {
 }
 
 function getSiteUrl(event: any) {
-  // Netlify가 제공하는 URL 우선
   const envUrl =
     process.env.URL || process.env.DEPLOY_PRIME_URL || process.env.SITE_URL;
 
   if (envUrl) return envUrl.replace(/\/$/, "");
 
-  // 로컬 fallback
-  const proto = event.headers["x-forwarded-proto"] || "http";
-  const host = event.headers.host || "localhost:8888";
+  const proto = event.headers?.["x-forwarded-proto"] || "http";
+  const host = event.headers?.host || "localhost:8888";
   return `${proto}://${host}`;
 }
 
-function toFormUrlEncoded(data: Record<string, any>) {
-  const params = new URLSearchParams();
-  for (const [k, v] of Object.entries(data)) {
-    if (v === undefined || v === null) continue;
-    params.append(k, String(v));
+// ✅ addons 키를 정규화 (extra_revisions -> additional_revisions)
+function normalizeAddonKey(k: string): AddonKey | null {
+  if (k === "extra_revisions") return "additional_revisions";
+  if (
+    k === "google_business" ||
+    k === "review_request" ||
+    k === "copy_refinement" ||
+    k === "domain_connection" ||
+    k === "additional_revisions"
+  ) {
+    return k;
   }
-  return params.toString();
+  return null;
 }
 
 export const handler = async (event: any) => {
@@ -72,12 +88,16 @@ export const handler = async (event: any) => {
     const body = JSON.parse(event.body || "{}");
     const template = body.template || "electrician";
     const theme = body.theme || "A";
-    const addons: AddonKey[] = Array.isArray(body.addons) ? body.addons : [];
+
+    // ✅ addons 정리: normalize + null 제거 + 중복 제거
+    const rawAddons: string[] = Array.isArray(body.addons) ? body.addons : [];
+    const addons: AddonKey[] = Array.from(
+      new Set(rawAddons.map(normalizeAddonKey).filter(Boolean) as AddonKey[]),
+    );
 
     const siteUrl = getSiteUrl(event);
 
     // ---- line items 만들기 (base + addons)
-    // base: $129 CAD
     const lineItems: Array<{ name: string; amount: number; qty: number }> = [
       {
         name: `Website Template (${template})`,
@@ -96,36 +116,33 @@ export const handler = async (event: any) => {
       });
     }
 
-    // Stripe는 form-urlencoded로 nested params 필요
-    // line_items[0][price_data][currency]=cad
-    // line_items[0][price_data][product_data][name]=...
-    // line_items[0][price_data][unit_amount]=...
-    // line_items[0][quantity]=1
-
     const params = new URLSearchParams();
     params.set("mode", "payment");
     params.set(
       "success_url",
-      // IMPORTANT: SPA route is "/thank-you" (not "/thankyou").
-      // Using the wrong path will hit the catch-all route and redirect users back to "/".
-      `${siteUrl}/thank-you?paid=1&template=${encodeURIComponent(template)}&theme=${encodeURIComponent(theme)}&addons=${encodeURIComponent(addons.join(","))}`,
+      `${siteUrl}/thank-you?paid=1&template=${encodeURIComponent(
+        template,
+      )}&theme=${encodeURIComponent(theme)}&addons=${encodeURIComponent(
+        addons.join(","),
+      )}`,
     );
     params.set(
       "cancel_url",
-      `${siteUrl}/checkout?template=${encodeURIComponent(template)}&theme=${encodeURIComponent(theme)}&addons=${encodeURIComponent(addons.join(","))}`,
+      `${siteUrl}/checkout?template=${encodeURIComponent(
+        template,
+      )}&theme=${encodeURIComponent(theme)}&addons=${encodeURIComponent(
+        addons.join(","),
+      )}`,
     );
 
-    // automatic_tax
     if (ENABLE_AUTOMATIC_TAX) {
       params.set("automatic_tax[enabled]", "true");
     }
 
-    // metadata
     params.set("metadata[template]", template);
     params.set("metadata[theme]", theme);
     params.set("metadata[addons]", addons.join(","));
 
-    // line items
     lineItems.forEach((it, idx) => {
       params.set(`line_items[${idx}][price_data][currency]`, "cad");
       params.set(`line_items[${idx}][price_data][product_data][name]`, it.name);
@@ -157,7 +174,6 @@ export const handler = async (event: any) => {
       };
     }
 
-    // json.url 로 redirect
     return {
       statusCode: 200,
       body: JSON.stringify({ url: json.url }),
