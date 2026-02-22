@@ -12,6 +12,12 @@ export default function Header() {
   const params = new URLSearchParams(location.search);
   const isContact = location.pathname === "/contact";
   const isCheckout = location.pathname === "/checkout";
+  // ✅ ThankYou page can be /thankyou or /thank-you (legacy)
+  const isThankYou =
+    location.pathname === "/thankyou" ||
+    location.pathname === "/thank-you" ||
+    location.pathname.startsWith("/thankyou/") ||
+    location.pathname.startsWith("/thank-you/");
   const contactTo = isContact ? `/contact${location.search}` : "/contact?from=nav";
 
   // ✅ If user came to Contact from a demo (template/theme selected), show a Buy button in header
@@ -71,8 +77,8 @@ export default function Header() {
             </a>
           ) : null}
 
-          {/* Primary CTA */}
-          {!isCheckout && (
+          {/* Primary CTA (hide on Checkout + ThankYou pages) */}
+          {!isCheckout && !isThankYou && (
           primaryCtaKind === "checkout" ? (
             <a href={checkoutTo} className={styles.cta}>
               Checkout
