@@ -58,9 +58,34 @@ export default function Pricing() {
               </Link>
             </div>
 
+            <div className={styles.buyHint}>
+              Template-based one-page setup • 24–48h delivery • 1 revision included
+            </div>
+
             <p className={styles.finePrint}>
               Optional add-ons can be selected at checkout.
             </p>
+          </div>
+        </div>
+
+        <div className={styles.disclaimerBox}>
+          <h3 className={styles.disclaimerTitle}>What’s included</h3>
+          <ul className={styles.disclaimerList}>
+            <li>1-page website setup (template-based)</li>
+            <li>Mobile optimized</li>
+            <li>Your phone/email + service areas + services added</li>
+            <li>Basic SEO (title/description)</li>
+          </ul>
+
+          <h3 className={styles.disclaimerTitle}>Timeline &amp; revisions</h3>
+          <ul className={styles.disclaimerList}>
+            <li>Delivery: <b>24–48 hours</b> after intake submitted</li>
+            <li><b>1 revision round</b> included</li>
+            <li>Add-ons available (extra pages, custom features)</li>
+          </ul>
+
+          <div className={styles.disclaimerFine}>
+            By clicking “Buy”, you agree this is a <b>template-based setup service</b>, not a fully custom build.
           </div>
         </div>
 

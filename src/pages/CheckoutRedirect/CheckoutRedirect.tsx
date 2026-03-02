@@ -100,6 +100,21 @@ export default function CheckoutRedirect() {
     extra_revisions: selectedFromQuery.has("extra_revisions"),
   });
 
+
+  const addonsCsvCurrent = useMemo(() => {
+    const addons = ADDONS.filter((a) => selected[a.key]).map((a) => a.key);
+    return addons.join(",");
+  }, [selected]);
+
+  const contactTo = useMemo(() => {
+    if (!template) return "/contact";
+    const qs = new URLSearchParams();
+    qs.set("template", template);
+    qs.set("theme", theme);
+    if (addonsCsvCurrent) qs.set("addons", addonsCsvCurrent);
+    return `/contact?${qs.toString()}`;
+  }, [template, theme, addonsCsvCurrent]);
+
   const basePrice = 129;
   const addonsTotal = useMemo(() => {
     return ADDONS.reduce((sum, a) => sum + (selected[a.key] ? a.priceCad : 0), 0);
@@ -250,7 +265,7 @@ export default function CheckoutRedirect() {
             >
               <strong>Payment error:</strong> {error}
               <div style={{ marginTop: 8 }}>
-                If you prefer, you can <Link to={`/contact?template=${encodeURIComponent(template)}&theme=${encodeURIComponent(theme)}`}>contact us</Link>.
+                If you prefer, you can <Link to={contactTo}>contact us</Link>.
               </div>
             </div>
           )}
@@ -258,7 +273,7 @@ export default function CheckoutRedirect() {
 
         <div style={{ marginTop: 18, display: "flex", gap: 12, flexWrap: "wrap" }}>
           <Link to={template ? `/demo/${template}` : "/templates"}>← Back</Link>
-          <Link to="/contact">Contact instead</Link>
+          <Link to={contactTo}>Contact instead</Link>
         </div>
 
         <div style={{ marginTop: 18, opacity: 0.8, lineHeight: 1.5 }}>

@@ -144,3 +144,10 @@
 .clientLink{display:block;padding:14px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.10);text-decoration:none;color:#111;background:#fff}
 .clientLink:hover{transform:translateY(-1px);filter:brightness(1.02)}
 @media (max-width:900px){.clientGrid{grid-template-columns:1fr}}
+
+
+.disabledAction {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}

@@ -9,14 +9,14 @@ type AddonKey =
   | "review_request"
   | "copy_refinement"
   | "domain_connection"
-  | "additional_revisions";
+  | "extra_revisions";
 
 const ADDON_LABELS: Record<AddonKey, string> = {
   google_business: "Google Business Profile setup (+$79)",
   review_request: "Review request message setup (+$39)",
   copy_refinement: "Copy refinement (+$49)",
   domain_connection: "Domain connection — done for you (+$49)",
-  additional_revisions: "Additional revisions / small changes (+$39)",
+  extra_revisions: "Additional revisions / small changes (+$39)",
 };
 
 function parseAddons(raw: string): AddonKey[] {
@@ -30,7 +30,7 @@ function parseAddons(raw: string): AddonKey[] {
     "review_request",
     "copy_refinement",
     "domain_connection",
-    "additional_revisions",
+    "extra_revisions",
   ];
 
   const set = new Set<AddonKey>();
@@ -63,9 +63,20 @@ export default function Intake() {
     [location.search],
   );
 
-  const template = params.get("template") ?? "";
+  const templateFromQuery = params.get("template") ?? "";
   const theme = (params.get("theme") ?? "A").toUpperCase();
   const addonsRaw = params.get("addons") ?? "";
+
+  const INDUSTRY_OPTIONS = ["electrician", "plumbing", "roofing", "cleaning", "handyman"] as const;
+  type IndustryOption = (typeof INDUSTRY_OPTIONS)[number];
+
+  const template = useMemo<IndustryOption>(() => {
+    return INDUSTRY_OPTIONS.includes(templateFromQuery as any)
+      ? (templateFromQuery as IndustryOption)
+      : "electrician";
+  }, [templateFromQuery]);
+
+
 
   // ✅ checkout에서 넘어온 addons만 "읽기 전용"으로 표시
   const addonsList = useMemo(() => parseAddons(addonsRaw), [addonsRaw]);
@@ -75,7 +86,7 @@ export default function Intake() {
   const hasReviewRequest = addonsSet.has("review_request");
   const hasCopyRefinement = addonsSet.has("copy_refinement");
   const hasDomainConnection = addonsSet.has("domain_connection");
-  const hasAdditionalRevisions = addonsSet.has("additional_revisions");
+  const hasExtraRevisions = addonsSet.has("extra_revisions");
 
   const addonsDisplay = useMemo(() => {
     if (!addonsList.length) return "None";
@@ -123,7 +134,7 @@ export default function Intake() {
         addon_review_request: hasReviewRequest ? "yes" : "no",
         addon_copy_refinement: hasCopyRefinement ? "yes" : "no",
         addon_domain_connection: hasDomainConnection ? "yes" : "no",
-        addon_additional_revisions: hasAdditionalRevisions ? "yes" : "no",
+        addon_extra_revisions: hasExtraRevisions ? "yes" : "no",
 
         addonsDisplay,
       };
@@ -304,12 +315,12 @@ export default function Intake() {
               <label className={styles.checkRow}>
                 <input
                   type="checkbox"
-                  name="addon_additional_revisions"
-                  checked={hasAdditionalRevisions}
+                  name="addon_extra_revisions"
+                  checked={hasExtraRevisions}
                   readOnly
                   disabled
                 />
-                <span>{ADDON_LABELS.additional_revisions}</span>
+                <span>{ADDON_LABELS.extra_revisions}</span>
               </label>
             </div>
 

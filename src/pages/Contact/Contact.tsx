@@ -128,7 +128,7 @@ export default function Contact() {
   }, [location.search]);
 
   useEffect(() => {
-    if (from === "nav" || from === "pricing") {
+    if (from === "nav" || from === "pricing" || from === "custom") {
       try {
         localStorage.removeItem("demoOrderDraft:v1");
         sessionStorage.removeItem("orderFlow:fromDemo");
@@ -136,7 +136,15 @@ export default function Contact() {
         // ignore
       }
       setDraft(null);
-      return;
+    }
+
+    // ✅ Custom inquiry: prefill message
+    if (from === "custom") {
+      setMessage((prev) =>
+        prev?.trim()
+          ? prev
+          : "Hi, I’d like a quote for a custom website.\n\nBusiness name:\nIndustry:\nCity/Service area:\nPages needed (approx):\nAny examples/links:\nNotes:"
+      );
     }
 
     const flowFlag = (() => {
@@ -149,7 +157,15 @@ export default function Contact() {
 
     if (!hasSelectionQuery && !flowFlag) {
       setDraft(null);
-      return;
+    }
+
+    // ✅ Custom inquiry: prefill message
+    if (from === "custom") {
+      setMessage((prev) =>
+        prev?.trim()
+          ? prev
+          : "Hi, I’d like a quote for a custom website.\n\nBusiness name:\nIndustry:\nCity/Service area:\nPages needed (approx):\nAny examples/links:\nNotes:"
+      );
     }
 
     try {

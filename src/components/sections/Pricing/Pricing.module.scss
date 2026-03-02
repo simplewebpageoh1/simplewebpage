@@ -250,3 +250,37 @@
     justify-content: center;
   }
 }
+
+.buyHint{
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.disclaimerBox{
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.04);
+  line-height: 1.6;
+}
+
+.disclaimerTitle{
+  font-size: 16px;
+  margin: 0 0 6px;
+}
+
+.disclaimerList{
+  margin: 0 0 14px;
+  padding-left: 18px;
+}
+
+.disclaimerList li{
+  margin: 6px 0;
+}
+
+.disclaimerFine{
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.9;
+}

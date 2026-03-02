@@ -16,6 +16,7 @@ import Templates from "../pages/Templates/Templates";
 import TemplateLanding from "../pages/TemplateLanding/TemplateLanding";
 import DemoOnePage from "../pages/DemoOnePage/DemoOnePage";
 import ElectricianDemo from "../pages/ElectricianDemo/ElectricianDemo";
+import PlumbingDemo from "../pages/PlumbingDemo/PlumbingDemo";
 import Refund from "../pages/Policies/Refund";
 import Terms from "../pages/Policies/Terms";
 import Privacy from "../pages/Policies/Privacy";
@@ -46,6 +47,9 @@ export default function AppRouter() {
 
       {/* ✅ 데모(미리보기): 전기 템플릿(ABC) */}
       <Route path="/demo/electrician/:variant" element={<ElectricianDemo />} />
+
+      {/* ✅ 데모(미리보기): 플러밍 템플릿(현재 B만) */}
+      <Route path="/demo/plumbing/:variant" element={<PlumbingDemo />} />
 
       {/* ✅ 기존 데모(구버전) */}
       <Route path="/demo/:slug" element={<DemoOnePage />} />

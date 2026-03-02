@@ -20,6 +20,19 @@ const ELECTRICIAN = {
   ] as const,
 };
 
+
+const PLUMBING = {
+  slug: "plumbing",
+  title: "Plumbing (One Page)",
+  desc: "One-page website template for plumbers. Theme B is available now (A/C coming soon).",
+  themes: [
+    { id: "A", label: "A (Coming soon)", disabled: true },
+    { id: "B", label: "B (Available)", disabled: false },
+    { id: "C", label: "C (Coming soon)", disabled: true },
+  ] as const,
+};
+
+
 export default function Templates() {
   return (
     <div className={styles.page}>
@@ -88,6 +101,57 @@ export default function Templates() {
                   check both versions.
                 </div>
               </div>
+
+              <div className={styles.card}>
+                <h3 className={styles.cardTitle}>{PLUMBING.title}</h3>
+                <p className={styles.cardDesc}>{PLUMBING.desc}</p>
+
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
+                  {PLUMBING.themes.map((t) =>
+                    t.disabled ? (
+                      <span
+                        key={t.id}
+                        className={`${styles.action} ${styles.disabledAction}`}
+                        aria-disabled="true"
+                      >
+                        Preview {t.label}
+                      </span>
+                    ) : (
+                      <Link
+                        key={t.id}
+                        className={styles.action}
+                        to={`/demo/plumbing/${t.id.toLowerCase()}`}
+                        onClick={() =>
+                          trackEvent("template_preview", {
+                            industry: PLUMBING.slug,
+                            theme: t.id,
+                            location: "templates_list",
+                          })
+                        }
+                      >
+                        Preview {t.label}
+                      </Link>
+                    ),
+                  )}
+                  <Link
+                    className={`${styles.action} ${styles.buyAction}`}
+                    to={`/checkout?template=${PLUMBING.slug}&theme=B`}
+                    onClick={() =>
+                      trackEvent("template_buy_intent", {
+                        industry: PLUMBING.slug,
+                        location: "templates_list",
+                      })
+                    }
+                  >
+                    Buy ($129)
+                  </Link>
+                </div>
+
+                <div style={{ marginTop: 10, opacity: 0.9, lineHeight: 1.5 }}>
+                  Theme A/C will be added later. You can preview <b>B</b> now.
+                </div>
+              </div>
+
             </div>
           </div>
 

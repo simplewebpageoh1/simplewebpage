@@ -77,6 +77,13 @@ Send your details—we build and publish it for you.`}
       <Pricing />
 
       <ContactCTA
+        title="Need more than a simple website?"
+        subtitle="We also build custom websites. Contact us for a quote."
+        ctaText="Custom Website Inquiry"
+        ctaLink="/contact?from=custom"
+      />
+
+      <ContactCTA
         title="Ready to launch?"
         subtitle="Pick a template, preview it, and checkout when you’re ready — $129 one-time."
         ctaLink="/contact?from=nav"

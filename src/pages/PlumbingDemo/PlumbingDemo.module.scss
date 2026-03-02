@@ -1,0 +1,341 @@
+.heroWrap{
+  padding: var(--space-hero-top) 0 var(--space-hero-bottom);
+  background: var(--bg);
+}
+
+.heroPanel{
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--radius) + 6px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  background: var(--panel);
+  padding: 36px 36px 28px;
+  min-height: 560px;
+}
+
+.heroPanel::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image: var(--hero-bg);
+  background-size: cover;
+  background-position: right center;
+  background-repeat:no-repeat;
+  transform: scale(1.02);
+  z-index:0;
+  /* default: subtle fade so text area stays clean */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 48%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 48%);
+}
+
+.heroPanel::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  /* white veil for readability + premium softness */
+  background:
+    radial-gradient(900px 520px at 0% 10%, rgba(255,255,255,0.96), rgba(255,255,255,0.00) 70%),
+    linear-gradient(90deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.86) 42%, rgba(255,255,255,0.32) 64%, rgba(255,255,255,0.00) 78%);
+}
+
+.heroContent{position:relative; z-index:2; max-width: 720px;}
+
+.hero{
+  display:grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 28px;
+  align-items: center;
+}
+.heroLeft{padding-bottom: 24px;}
+.heroTitle{
+  margin: 16px 0 0;
+  font-size: clamp(40px, 4.8vw, 64px);
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+}
+.heroAccent{color: var(--accent);}
+.heroSub{margin-top: 14px; max-width: 640px;}
+
+.heroMeta{
+  margin-top: 18px;
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+.metaRow{display:flex; gap: 10px; flex-wrap:wrap;}
+.metaLabel{color: var(--muted); font-weight:800; font-size: 13px; min-width: 96px;}
+.metaValue{color: var(--text); font-weight:800; font-size: 13px;}
+
+.heroCtas{margin-top: 18px; display:flex; gap: 10px; flex-wrap:wrap;}
+
+.badgeRow{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.badge{padding: 12px 14px; box-shadow: none;}
+.badgeTitle{font-weight:900; font-size: 13px;}
+.badgeDesc{margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.45;}
+
+.heroRight{position:relative;}
+.heroImageWrap{position:relative; border-radius: var(--radius); overflow:hidden; border:1px solid var(--border);}
+.heroImg{width:100%; height: 520px; object-fit: cover; display:block;}
+.heroOverlay{position:absolute; left: 16px; bottom: 16px; right: 16px; display:flex; justify-content:flex-start;}
+.overlayCard{max-width: 340px; background: color-mix(in srgb, var(--bg) 60%, transparent); border:1px solid var(--border); border-radius: 14px; padding: 12px 14px; backdrop-filter: blur(10px);}
+.overlayTitle{font-weight: 900;}
+.overlayText{margin-top: 4px; color: var(--muted); font-size: 13px; line-height:1.5;}
+
+.sectionHead{display:flex; align-items:flex-start; gap: 14px; margin-bottom: 18px;}
+.kicker{width: 3px; height: 44px; background: var(--accent); border-radius: 999px; margin-top: 6px;}
+
+
+.servicesWrap{position: relative;}
+.contactWrap{position: relative;}
+
+.servicesGrid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.serviceCard{padding: 16px; box-shadow: none;}
+.serviceTitle{font-weight: 900;}
+.serviceDesc{margin-top: 8px; color: var(--muted); line-height: 1.6; font-size: 14px;}
+
+
+.aboutWrap{ /* keeps template bg colors but lets us add a premium photo treatment inside */ }
+
+.aboutPanel{
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--radius) + 6px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  background: var(--panel);
+  padding: 28px;
+}
+
+.aboutPanel::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image: var(--about-bg);
+  background-size: cover;
+  background-position: right center;
+  background-repeat:no-repeat;
+  z-index:0;
+  transform: scale(1.02);
+  opacity: 0.95;
+  /* fade the photo into the panel */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 55%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 55%);
+}
+
+.aboutPanel::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    radial-gradient(900px 520px at 0% 10%, rgba(255,255,255,0.97), rgba(255,255,255,0.00) 70%),
+    linear-gradient(90deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.88) 46%, rgba(255,255,255,0.28) 68%, rgba(255,255,255,0.00) 82%);
+}
+
+.aboutInner{position:relative; z-index:2; max-width: 760px;}
+
+.aboutGrid{display:grid; grid-template-columns: 1fr 1fr; gap: 14px;}
+.aboutCard{padding: 18px; box-shadow: none;}
+.aboutImage{overflow:hidden; box-shadow: none;}
+.aboutImg{width:100%; height: 100%; object-fit: cover; display:block; min-height: 220px;}
+
+.whyCard{padding: 18px; box-shadow: none;}
+.bullets{margin:0; padding-left: 18px; color: var(--muted); line-height:1.8;}
+
+.contactCard{padding: 18px; box-shadow: none; max-width: 760px;}
+.contactRow{display:flex; justify-content:space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border);}
+.contactRow:first-of-type{border-top: 0; padding-top: 0;}
+.contactLabel{font-weight: 900;}
+.contactValue{color: var(--text); font-weight: 800;}
+.ctaLine{margin-top: 14px; color: var(--muted);}
+.contactActions{margin-top: 14px; display:flex; gap: 10px; flex-wrap: wrap;}
+.footer{margin-top: 28px; padding: 18px 0 10px; color: var(--muted); font-size: 13px;}
+
+
+/* Variant tweaks */
+
+/* A: clean, luxury fade */
+.heroA .heroAccent{color: var(--text)}
+.heroA .heroPanel::after{
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 44%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 44%);
+}
+.aboutA .aboutPanel::after{
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 52%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 52%);
+}
+
+
+/* B: dark about overlay (match hero dark fade) */
+.aboutB .aboutPanel::before{
+  background:
+    radial-gradient(900px 520px at 0% 10%, rgba(0,0,0,0.55), rgba(0,0,0,0.00) 70%),
+    linear-gradient(90deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.50) 46%, rgba(0,0,0,0.10) 68%, rgba(0,0,0,0.00) 82%);
+}
+.aboutB .aboutPanel::after{
+  opacity: 0.98;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 52%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 52%);
+}
+/* B: darker image + glow accents (keep the template colors) */
+.heroB{
+  background: radial-gradient(1200px 500px at 20% 0%, rgba(247,201,72,0.18), transparent 55%),
+              radial-gradient(900px 500px at 80% 20%, rgba(255,255,255,0.10), transparent 55%),
+              var(--bg);
+}
+.heroB .heroAccent{color: var(--accent)}
+.heroB .heroPanel::before{
+  background:
+    radial-gradient(900px 520px at 0% 10%, rgba(0,0,0,0.55), rgba(0,0,0,0.00) 70%),
+    linear-gradient(90deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.50) 46%, rgba(0,0,0,0.10) 68%, rgba(0,0,0,0.00) 80%);
+}
+.heroB .heroPanel::after{
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 52%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 52%);
+  opacity: 0.92;
+}
+.heroB .badge{background: rgba(255,255,255,0.04)}
+.servicesB::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image: var(--hero-bg);
+  background-size: cover;
+  background-position: right center;
+  opacity: 0.12;
+  pointer-events:none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 40%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 40%, #000 80%, transparent 100%);
+}
+
+/* C: diagonal mask for a more dynamic look */
+.heroC{
+  background: radial-gradient(900px 420px at 20% 0%, rgba(47,107,255,0.14), transparent 55%),
+              radial-gradient(900px 420px at 80% 20%, rgba(90, 202, 255,0.12), transparent 55%),
+              var(--bg);
+}
+.heroC .heroPanel::after{
+  -webkit-mask-image: linear-gradient(110deg, transparent 0%, #000 58%);
+  mask-image: linear-gradient(110deg, transparent 0%, #000 58%);
+}
+.aboutC .aboutPanel::after{
+  -webkit-mask-image: linear-gradient(120deg, transparent 0%, #000 60%);
+  mask-image: linear-gradient(120deg, transparent 0%, #000 60%);
+}
+
+/* D: softer, blurred background + photo hint on sections */
+.heroD{
+  background: radial-gradient(900px 420px at 20% 0%, rgba(31,111,235,0.12), transparent 55%),
+              var(--bg);
+}
+.heroD .heroPanel::after{
+  opacity: 0.55;
+  filter: blur(2px) saturate(1.05);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 62%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 62%);
+}
+.contactD::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image: var(--hero-bg);
+  background-size: cover;
+  background-position: right center;
+  opacity: 0.10;
+  pointer-events:none;
+  -webkit-mask-image: radial-gradient(circle at 70% 40%, #000 0%, transparent 62%);
+  mask-image: radial-gradient(circle at 70% 40%, #000 0%, transparent 62%);
+}
+
+@media (max-width: 980px){
+  .heroPanel{padding: 28px 18px 18px; min-height: 560px;}
+  .heroTitle{font-size: clamp(36px, 8vw, 52px);}
+  .badgeRow{grid-template-columns: 1fr;}
+  .servicesGrid{grid-template-columns: repeat(2, 1fr)}
+
+  /* Mobile: make background photo clearly visible (>= half) for ALL variants.
+     Important: include variant selectors so these rules override variant-specific masks.
+  */
+  .heroPanel::after,
+  .heroA .heroPanel::after,
+  .heroB .heroPanel::after,
+  .heroC .heroPanel::after,
+  .heroD .heroPanel::after{
+    background-position: 60% center;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 22%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 22%);
+  }
+
+  .aboutPanel::after,
+  .aboutA .aboutPanel::after,
+  .aboutB .aboutPanel::after,
+  .aboutC .aboutPanel::after,
+  .aboutD .aboutPanel::after{
+    background-position: 62% center;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 26%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 26%);
+  }
+
+
+}
+
+
+@media (max-width: 560px){
+  .servicesGrid{grid-template-columns: 1fr}
+  .metaLabel{min-width: 86px}
+
+  .heroPanel::after,
+  .heroA .heroPanel::after,
+  .heroB .heroPanel::after,
+  .heroC .heroPanel::after,
+  .heroD .heroPanel::after{
+    background-position: 56% center;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 16%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 16%);
+  }
+
+  .aboutPanel::after,
+  .aboutA .aboutPanel::after,
+  .aboutB .aboutPanel::after,
+  .aboutC .aboutPanel::after,
+  .aboutD .aboutPanel::after{
+    background-position: 58% center;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 18%);
+  }
+
+
+}
+/* When using the "Mobile" preview frame, force mobile-like layout even on desktop viewport */
+.previewMobileFrame .servicesGrid{grid-template-columns: 1fr;}
+.previewMobileFrame .badgeRow{grid-template-columns: 1fr; gap: 10px;}
+.previewMobileFrame .aboutGrid{grid-template-columns: 1fr;}
+
+/* Preview frames (Desktop/Mobile) */
+.previewDesktop{ width: 100%; }
+.previewMobileFrame{
+  width: 420px;
+  max-width: calc(100vw - 24px);
+  margin: 16px auto 48px;
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,0.14);
+  overflow: hidden;
+  box-shadow: 0 18px 55px rgba(0,0,0,0.28);
+}
+
+
+.heroSub2 {
+  margin-top: 6px;
+  opacity: 0.9;
+}

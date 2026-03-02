@@ -6,8 +6,6 @@ type AddonKey =
   | "review_request"
   | "copy_refinement"
   | "domain_connection"
-  | "additional_revisions"
-  // ✅ 프론트에서 잘못 보내는 키도 받아주기(호환)
   | "extra_revisions";
 
 const ADDONS: Record<AddonKey, { label: string; amountCad: number }> = {
@@ -23,12 +21,6 @@ const ADDONS: Record<AddonKey, { label: string; amountCad: number }> = {
   domain_connection: {
     label: "Domain connection — done for you (Add-on)",
     amountCad: 49,
-  },
-
-  // ✅ 정식 키
-  additional_revisions: {
-    label: "Additional revisions / small changes (Add-on)",
-    amountCad: 39,
   },
 
   // ✅ 과거/프론트 오타 키 (같은 금액으로 매핑)
@@ -53,15 +45,15 @@ function getSiteUrl(event: any) {
   return `${proto}://${host}`;
 }
 
-// ✅ addons 키를 정규화 (extra_revisions -> additional_revisions)
+// ✅ addons 키를 정규화 (additional_revisions -> extra_revisions)
 function normalizeAddonKey(k: string): AddonKey | null {
-  if (k === "extra_revisions") return "additional_revisions";
+  if (k === "additional_revisions") return "extra_revisions";
   if (
     k === "google_business" ||
     k === "review_request" ||
     k === "copy_refinement" ||
     k === "domain_connection" ||
-    k === "additional_revisions"
+    k === "extra_revisions"
   ) {
     return k;
   }
@@ -100,7 +92,7 @@ export const handler = async (event: any) => {
     // ---- line items 만들기 (base + addons)
     const lineItems: Array<{ name: string; amount: number; qty: number }> = [
       {
-        name: `Website Template (${template})`,
+        name: "Simple One-Page Website (Service Business)",
         amount: cadToCents(129),
         qty: 1,
       },
@@ -126,14 +118,7 @@ export const handler = async (event: any) => {
         addons.join(","),
       )}`,
     );
-    params.set(
-      "cancel_url",
-      `${siteUrl}/checkout?template=${encodeURIComponent(
-        template,
-      )}&theme=${encodeURIComponent(theme)}&addons=${encodeURIComponent(
-        addons.join(","),
-      )}`,
-    );
+    params.set("cancel_url", `${siteUrl}/templates`);
 
     if (ENABLE_AUTOMATIC_TAX) {
       params.set("automatic_tax[enabled]", "true");

@@ -43,7 +43,7 @@ export default function ThankYou() {
 
     const t = window.setTimeout(() => {
       window.location.href = intakeUrl;
-    }, 2500);
+    }, 2000);
 
     return () => window.clearTimeout(t);
   }, [isPaid, isFromIntake, intakeUrl]);
