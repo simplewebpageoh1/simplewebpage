@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
+import { fullThemeLabel } from "../../../lib/theme";
 import styles from "./TopBar.module.scss";
 
 export default function TopBar({
@@ -18,34 +19,23 @@ export default function TopBar({
       <div className={styles.wrap}>
         <div className={`container ${styles.inner}`}>
           <Link className={styles.brand} to="/templates">
-            SimpleWebpageOH • Plumbing
+            SimpleWebpageOH • Plumbing • {fullThemeLabel(theme)}
           </Link>
 
           <div className={styles.right}>
-            {/* Row 1: ABC + Contact (mobile: this becomes the 2nd row under brand) */}
             <div className={styles.rowTabs}>
               <div className={styles.tabs}>
-                {(["A", "B", "C"] as const).map((v) => {
-                  const isDisabled = v !== "B";
-                  if (isDisabled) {
-                    return (
-                      <span key={v} className={`${styles.tab} ${styles.disabled}`} aria-disabled="true">
-                        {v}
-                      </span>
-                    );
-                  }
-                  return (
-                    <NavLink
-                      key={v}
-                      to={`/demo/plumbing/${v.toLowerCase()}`}
-                      className={({ isActive }) =>
-                        `${styles.tab} ${isActive ? styles.active : ""}`
-                      }
-                    >
-                      {v}
-                    </NavLink>
-                  );
-                })}
+                {(["A", "B", "C"] as const).map((v) => (
+                  <NavLink
+                    key={v}
+                    to={`/demo/plumbing/${v.toLowerCase()}`}
+                    className={({ isActive }) =>
+                      `${styles.tab} ${isActive ? styles.active : ""}`
+                    }
+                  >
+                    {v}
+                  </NavLink>
+                ))}
               </div>
 
               <Link className={`btn btnSecondary ${styles.btn}`} to={contactHref}>
@@ -53,7 +43,6 @@ export default function TopBar({
               </Link>
             </div>
 
-            {/* Row 2: Desktop/Mobile preview + Buy (desktop/tablet only) */}
             <div className={styles.rowActions}>
               <div className={styles.viewBtns}>
                 <button
@@ -82,7 +71,6 @@ export default function TopBar({
         </div>
       </div>
 
-      {/* ✅ Mobile: move Buy to bottom sticky bar */}
       <div className={styles.mobileBuyBar}>
         <div className={`container ${styles.mobileBuyInner}`}>
           <a className={`btn btnPrimary ${styles.mobileBuyBtn}`} href={buyHref}>

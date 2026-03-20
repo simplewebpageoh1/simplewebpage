@@ -67,7 +67,7 @@ export default function PlumbingDemo() {
   return (
     <PlumbingSiteLayout theme={theme}>
       <Helmet>
-        <title>{content.businessName} — Theme {theme}</title>
+        <title>{content.businessName} — {theme === "A" ? "Black & White" : theme === "B" ? "Dark Premium" : "Soft Clean"}</title>
       </Helmet>
 
       <TopBar theme={theme} preview={preview} setPreview={setPreview} />

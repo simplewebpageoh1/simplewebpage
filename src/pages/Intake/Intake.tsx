@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Seo from "../../components/seo/Seo";
+import { fullThemeLabel, normalizeTheme, templateLabel } from "../../lib/theme";
 import styles from "./Intake.module.scss";
 
 type AddonKey =
@@ -64,7 +65,7 @@ export default function Intake() {
   );
 
   const templateFromQuery = params.get("template") ?? "";
-  const theme = (params.get("theme") ?? "A").toUpperCase();
+  const theme = normalizeTheme(params.get("theme"));
   const addonsRaw = params.get("addons") ?? "";
 
   const INDUSTRY_OPTIONS = ["electrician", "plumbing", "roofing", "cleaning", "handyman"] as const;
@@ -173,10 +174,10 @@ export default function Intake() {
 
           <div className={styles.summary}>
             <div>
-              <strong>Template:</strong> {template || "—"}
+              <strong>Template:</strong> {templateLabel(template) || "—"}
             </div>
             <div>
-              <strong>Theme:</strong> {theme || "—"}
+              <strong>Theme:</strong> {fullThemeLabel(theme) || "—"}
             </div>
             <div>
               <strong>Add-ons (paid):</strong> {addonsDisplay}

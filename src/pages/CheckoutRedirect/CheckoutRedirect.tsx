@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Seo from "../../components/seo/Seo";
-import { normalizeTheme, themeLabel } from "../../lib/theme";
-
-function titleCase(s: string) {
-  return s
-    .split(/[-_\s]+/g)
-    .filter(Boolean)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
+import { fullThemeLabel, getDemoPath, normalizeTheme, templateLabel } from "../../lib/theme";
+import styles from "./CheckoutRedirect.module.scss";
 
 type AddonKey =
   | "google_business"
@@ -86,8 +79,8 @@ export default function CheckoutRedirect() {
   const addonsCsvFromQuery = params.get("addons") ?? "";
 
   const label = useMemo(() => {
-    const t = template ? titleCase(template) : "Template";
-    return `You are ordering the ${t} — ${themeLabel(theme)}`;
+    const t = templateLabel(template);
+    return `You are ordering the ${t} — ${fullThemeLabel(theme)}`;
   }, [template, theme]);
 
   const selectedFromQuery = useMemo(() => parseAddonsCsv(addonsCsvFromQuery), [addonsCsvFromQuery]);
@@ -158,64 +151,43 @@ export default function CheckoutRedirect() {
   }
 
   return (
-    <main style={{ padding: 48 }}>
+    <main className={styles.page}>
       <Seo title="Checkout" description="Secure checkout." path="/checkout" />
       <div className="container">
-        <h1>Checkout</h1>
-        <p style={{ marginTop: 12, lineHeight: 1.6, opacity: 0.9 }}>
+        <h1 className={styles.title}>Checkout</h1>
+        <p className={styles.lead}>
           <strong>{label}</strong>
           <br />
           One-time base price: <b>${basePrice} CAD</b>.
         </p>
 
-        <div
-          style={{
-            marginTop: 16,
-            padding: 14,
-            borderRadius: 14,
-            border: "1px solid rgba(0,0,0,.08)",
-            background: "rgba(0,0,0,.03)",
-            lineHeight: 1.65,
-          }}
-        >
+        <div className={styles.noticeBox}>
           After payment, you&apos;ll fill out a short setup form (Intake) so we can build
           your site.
         </div>
 
-        <div style={{ marginTop: 22 }}>
-          <h2 style={{ margin: 0, fontSize: 18 }}>Optional add-ons</h2>
-          <p style={{ marginTop: 6, opacity: 0.85, lineHeight: 1.5 }}>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Optional add-ons</h2>
+          <p className={styles.sectionHint}>
             Add-ons are optional. If selected, they will be included in the checkout total.
           </p>
 
-          <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
+          <div className={styles.addonsGrid}>
             {ADDONS.map((a) => (
-              <label
-                key={a.key}
-                style={{
-                  display: "flex",
-                  gap: 12,
-                  alignItems: "flex-start",
-                  padding: 12,
-                  borderRadius: 14,
-                  border: "1px solid rgba(0,0,0,.10)",
-                  background: "#fff",
-                  cursor: "pointer",
-                }}
-              >
+              <label key={a.key} className={styles.addonCard}>
                 <input
                   type="checkbox"
                   checked={selected[a.key]}
                   onChange={(e) =>
                     setSelected((s) => ({ ...s, [a.key]: e.target.checked }))
                   }
-                  style={{ marginTop: 4 }}
+                  className={styles.addonCheck}
                 />
                 <div>
-                  <div style={{ fontWeight: 800 }}>
+                  <div className={styles.addonTitle}>
                     {a.title} (+${a.priceCad})
                   </div>
-                  <div style={{ marginTop: 4, opacity: 0.85, lineHeight: 1.45 }}>
+                  <div className={styles.addonDesc}>
                     {a.desc}
                   </div>
                 </div>
@@ -223,60 +195,33 @@ export default function CheckoutRedirect() {
             ))}
           </div>
 
-          <div
-            style={{
-              marginTop: 14,
-              paddingTop: 14,
-              borderTop: "1px solid rgba(0,0,0,.10)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-              flexWrap: "wrap",
-            }}
-          >
-            <div style={{ fontWeight: 900, fontSize: 18 }}>Total: ${total} CAD</div>
+          <div className={styles.totalBar}>
+            <div className={styles.total}>Total: ${total} CAD</div>
             <button
               type="button"
               onClick={startCheckout}
-              style={{
-                border: "none",
-                borderRadius: 999,
-                padding: "12px 18px",
-                fontWeight: 900,
-                cursor: "pointer",
-              }}
+              className={styles.payBtn}
             >
               Continue to secure payment
             </button>
           </div>
 
           {error && (
-            <div
-              role="alert"
-              style={{
-                marginTop: 12,
-                padding: 12,
-                borderRadius: 12,
-                border: "1px solid rgba(220,38,38,.25)",
-                background: "rgba(220,38,38,.06)",
-                lineHeight: 1.5,
-              }}
-            >
+            <div role="alert" className={styles.errorBox}>
               <strong>Payment error:</strong> {error}
-              <div style={{ marginTop: 8 }}>
+              <div className={styles.errorHint}>
                 If you prefer, you can <Link to={contactTo}>contact us</Link>.
               </div>
             </div>
           )}
-        </div>
+        </section>
 
-        <div style={{ marginTop: 18, display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <Link to={template ? `/demo/${template}` : "/templates"}>← Back</Link>
+        <div className={styles.backRow}>
+          <Link to={template ? getDemoPath(template, theme) : "/templates"}>← Back</Link>
           <Link to={contactTo}>Contact instead</Link>
         </div>
 
-        <div style={{ marginTop: 18, opacity: 0.8, lineHeight: 1.5 }}>
+        <div className={styles.taxHint}>
           Note: taxes are handled in Stripe depending on your tax settings.
         </div>
       </div>

@@ -8,7 +8,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import styles from "./Contact.module.scss";
 import Seo from "../../components/seo/Seo";
-import { normalizeTheme, themeLabel } from "../../lib/theme";
+import { normalizeTheme, fullThemeLabel, templateLabel, themeLabel } from "../../lib/theme";
 
 type DemoOrderDraftV1 = {
   template?: string;
@@ -159,15 +159,6 @@ export default function Contact() {
       setDraft(null);
     }
 
-    // ✅ Custom inquiry: prefill message
-    if (from === "custom") {
-      setMessage((prev) =>
-        prev?.trim()
-          ? prev
-          : "Hi, I’d like a quote for a custom website.\n\nBusiness name:\nIndustry:\nCity/Service area:\nPages needed (approx):\nAny examples/links:\nNotes:"
-      );
-    }
-
     try {
       const raw = localStorage.getItem("demoOrderDraft:v1");
       if (!raw) return;
@@ -213,8 +204,8 @@ export default function Contact() {
   const selectionSummary = useMemo(() => {
     const parts: string[] = [];
     if (industryLabel) parts.push(`Industry: ${industryLabel}`);
-    if (selectedTemplate) parts.push(`Template: ${selectedTemplate}`);
-    if (themeFromQuery) parts.push(`Theme: ${themeLabel(themeFromQuery)}`);
+    if (selectedTemplate) parts.push(`Template: ${templateLabel(selectedTemplate)}`);
+    if (themeFromQuery) parts.push(`Theme: ${fullThemeLabel(themeFromQuery)}`);
     return parts.join(" | ");
   }, [industryLabel, selectedTemplate, themeFromQuery]);
 

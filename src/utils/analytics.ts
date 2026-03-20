@@ -1,7 +1,7 @@
 // src/utils/analytics.ts
-// ✅ (선택) Analytics 유틸
-// - GA4(gTag) 방식으로 "방문→템플릿→구매 클릭" 같은 흐름을 측정하기 위함
-// - .env에 VITE_GA4_ID가 없으면 아무 것도 실행하지 않습니다.
+// ✅ GA4 utility
+// - Loads only when VITE_GA4_ID exists
+// - Skips localhost / 127.0.0.1 / *.local during development
 
 declare global {
   interface Window {
@@ -20,31 +20,37 @@ function ensureScript(src: string) {
   document.head.appendChild(s);
 }
 
+function isBlockedHost(hostname: string) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
+    hostname.endsWith(".local")
+  );
+}
+
 export function initAnalytics() {
-  // ✅ ID가 없으면 비활성
   if (!GA4_ID) return;
   if (typeof window === "undefined") return;
+  if (isBlockedHost(window.location.hostname)) return;
 
-  // ✅ gtag 스크립트 로드
   ensureScript(`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`);
 
-  // ✅ dataLayer/gtag 초기화
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag(...args: any[]) {
     window.dataLayer!.push(args);
   };
 
-  // ✅ 기본 설정(자동 page_view는 SPA에서 중복될 수 있어 false)
   window.gtag("js", new Date());
   window.gtag("config", GA4_ID, {
     send_page_view: false,
   });
 }
 
-export function trackPageView(pathname: string) {
+export function trackPageView(pathWithSearch: string) {
   if (!GA4_ID || !window.gtag) return;
   window.gtag("event", "page_view", {
-    page_path: pathname,
+    page_path: pathWithSearch,
   });
 }
 

@@ -1,5 +1,4 @@
 // src/components/sections/Pricing/Pricing.tsx
-// ✅ 가격표 섹션 (단일 가격 + 선택형 Add-ons)
 
 import { Link } from "react-router-dom";
 import styles from "./Pricing.module.scss";
@@ -45,16 +44,16 @@ export default function Pricing() {
                 Preview
               </Link>
               <Link
-                to="/checkout?template=electrician&theme=A"
+                to="/templates"
                 className={styles.secondaryBtn}
                 onClick={() => {
-                  trackEvent("cta_buy", {
+                  trackEvent("cta_choose_template", {
                     location: "pricing",
-                    method: "checkout",
+                    method: "templates",
                   });
                 }}
               >
-                Buy $129
+                Choose Template
               </Link>
             </div>
 
@@ -85,11 +84,10 @@ export default function Pricing() {
           </ul>
 
           <div className={styles.disclaimerFine}>
-            By clicking “Buy”, you agree this is a <b>template-based setup service</b>, not a fully custom build.
+            By clicking “Choose Template”, you agree this is a <b>template-based setup service</b>, not a fully custom build.
           </div>
         </div>
 
-        {/* ✅ 공통 섹션 */}
         <div className={styles.commonRow}>
           <div className={styles.commonCard}>
             <div className={styles.commonTitle}>Optional add-ons</div>

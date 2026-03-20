@@ -1,0 +1,121 @@
+.page {
+  padding: 44px 0 56px;
+}
+
+.title {
+  margin: 0;
+}
+
+.lead {
+  margin-top: 12px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.noticeBox {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  line-height: 1.6;
+}
+
+.section {
+  margin-top: 24px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 20px;
+}
+
+.sectionHint {
+  margin-top: 6px;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.addonsGrid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.addonCard {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.addonCheck {
+  margin-top: 4px;
+}
+
+.addonTitle {
+  font-weight: 700;
+}
+
+.addonDesc {
+  margin-top: 4px;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+
+.totalBar {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.total {
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.payBtn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--color-text);
+  color: #fff;
+}
+
+.errorBox {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  background: rgba(220, 38, 38, 0.06);
+  line-height: 1.5;
+}
+
+.errorHint {
+  margin-top: 8px;
+}
+
+.backRow {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.taxHint {
+  margin-top: 18px;
+  color: var(--color-muted);
+  line-height: 1.5;
+}

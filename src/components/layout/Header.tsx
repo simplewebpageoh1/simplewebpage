@@ -1,5 +1,4 @@
 // src/components/layout/Header.tsx
-// ✅ 모든 페이지 상단에 고정으로 보여줄 헤더(네비게이션)
 
 import { Link, NavLink, useLocation } from "react-router-dom";
 import styles from "./Header.module.scss";
@@ -13,20 +12,15 @@ export default function Header() {
   const isContact = location.pathname === "/contact";
   const isCheckout = location.pathname === "/checkout";
   const isIntake = location.pathname === "/intake";
-  // ✅ ThankYou page can be /thankyou or /thank-you (legacy)
   const isThankYou =
     location.pathname === "/thankyou" ||
     location.pathname === "/thank-you" ||
     location.pathname.startsWith("/thankyou/") ||
     location.pathname.startsWith("/thank-you/");
 
-  // ✅ On these steps, the user is already in (or after) the purchase flow.
-  // Remove *all* Checkout UI (both the primary CTA button and any secondary
-  // Checkout link) to avoid confusion like "Do I need to pay again?".
   const hideCheckoutUI = isCheckout || isThankYou || isIntake;
   const contactTo = isContact ? `/contact${location.search}` : "/contact?from=nav";
 
-  // ✅ If user came to Contact from a demo (template/theme selected), show a Buy button in header
   const selectedTemplate = params.get("template") ?? "";
   const themeRaw = params.get("theme");
   const selectedTheme = themeRaw ? normalizeTheme(themeRaw) : "";
@@ -40,24 +34,30 @@ export default function Header() {
 
   const hasSelection = Boolean(checkoutTo);
   const primaryIsCheckout = HEADER_PRIMARY_CTA === "checkout";
-
-  // ✅ Option A: prevent duplicate "Contact" in nav.
-  // If primary CTA is configured as Checkout but we DON'T have a selection,
-  // the CTA falls back to Contact. In that case, we should not also show a
-  // secondary Contact link.
   const primaryCtaKind: "checkout" | "contact" =
     primaryIsCheckout && hasSelection ? "checkout" : "contact";
 
+  function resetDraftForNewInquiry() {
+    try {
+      localStorage.removeItem("demoOrderDraft:v1");
+      sessionStorage.removeItem("orderFlow:fromDemo");
+    } catch {
+      // ignore
+    }
+  }
+
+  const contactLinkProps = {
+    to: contactTo,
+    onClick: !isContact ? resetDraftForNewInquiry : undefined,
+  };
 
   return (
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
-        {/* ✅ 브랜드/로고 영역 */}
         <Link to="/" className={styles.brand}>
           SimpleWebPage
         </Link>
 
-        {/* ✅ 네비게이션 링크 */}
         <nav className={styles.nav}>
           <NavLink to="/" className={styles.link}>
             Home
@@ -66,22 +66,12 @@ export default function Header() {
             Templates
           </NavLink>
 
-          {/*
-            ✅ CTA policy
-            - Keep only ONE "primary" CTA in the header (better mobile UX).
-            - When selection exists (template+theme), allow Checkout.
-          */}
-
-          {/* Secondary link (non-primary)
-              - Normal pages: keep the "Option A" logic to avoid duplicate Contact.
-              - Checkout/ThankYou/Intake: remove *all* Checkout UI completely.
-          */}
           {hideCheckoutUI ? (
-            <NavLink to={contactTo} className={styles.link}>
+            <NavLink {...contactLinkProps} className={styles.link}>
               Contact
             </NavLink>
           ) : primaryCtaKind === "checkout" ? (
-            <NavLink to={contactTo} className={styles.link}>
+            <NavLink {...contactLinkProps} className={styles.link}>
               Contact
             </NavLink>
           ) : hasSelection ? (
@@ -90,30 +80,16 @@ export default function Header() {
             </a>
           ) : null}
 
-          {/* Primary CTA (hide on Checkout + ThankYou + Intake pages) */}
-          {!hideCheckoutUI && (
-          primaryCtaKind === "checkout" ? (
-            <a href={checkoutTo} className={styles.cta}>
-              Checkout
-            </a>
-          ) : (
-            <NavLink
-              to={contactTo}
-              className={styles.cta}
-              onClick={() => {
-                // ✅ CTA Contact를 눌러 새 문의 흐름으로 시작할 때만 초기화
-                try {
-                  localStorage.removeItem("demoOrderDraft:v1");
-                  sessionStorage.removeItem("orderFlow:fromDemo");
-                } catch {
-                  // ignore
-                }
-              }}
-            >
-              Contact
-            </NavLink>
-          )
-          )}
+          {!hideCheckoutUI &&
+            (primaryCtaKind === "checkout" ? (
+              <a href={checkoutTo} className={styles.cta}>
+                Checkout
+              </a>
+            ) : (
+              <NavLink {...contactLinkProps} className={styles.cta}>
+                Contact
+              </NavLink>
+            ))}
         </nav>
       </div>
     </header>

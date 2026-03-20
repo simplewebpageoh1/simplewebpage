@@ -1,0 +1,78 @@
+.page {
+  padding: var(--section-y) 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--h2);
+  letter-spacing: -0.02em;
+}
+
+.intro {
+  margin-top: 12px;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.selection {
+  margin-top: 12px;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.notice {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  line-height: 1.65;
+}
+
+.inlineAction {
+  margin-top: 14px;
+}
+
+.inlineAction a {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.nextBox {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  line-height: 1.65;
+}
+
+.nextBox ul {
+  margin: 8px 0 0 18px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.backHome {
+  margin-top: 24px;
+  color: var(--color-muted);
+}

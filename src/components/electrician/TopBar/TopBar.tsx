@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
+import { fullThemeLabel } from "../../../lib/theme";
 import styles from "./TopBar.module.scss";
 
 export default function TopBar({
@@ -18,7 +19,7 @@ export default function TopBar({
       <div className={styles.wrap}>
         <div className={`container ${styles.inner}`}>
           <Link className={styles.brand} to="/templates">
-            SimpleWebpageOH • Electrician
+            SimpleWebpageOH • Electrician • {fullThemeLabel(theme)}
           </Link>
 
           <div className={styles.right}>

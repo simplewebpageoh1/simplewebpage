@@ -2,11 +2,12 @@
 /* ✅ 공통 문의 페이지 스타일 */
 
 .page {
-  padding: var(--space-7) 0;
+  padding: var(--section-y) 0;
 }
 
 .title {
-  font-size: 32px;
+  font-size: var(--h2);
+  letter-spacing: -0.02em;
   margin-bottom: var(--space-2);
 }
 
@@ -27,7 +28,7 @@
   display: grid;
   gap: var(--space-3);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
   padding: var(--space-4);
@@ -50,12 +51,12 @@
 }
 
 
-.note{border:1px solid var(--border, rgba(255,255,255,.12));border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.03);margin:12px 0 18px;line-height:1.6}
+.note{border:1px solid var(--color-border);border-radius:16px;padding:12px 14px;background:var(--color-surface-2);margin:12px 0 18px;line-height:1.6}
 .pdfLink{margin-left:8px;font-weight:700;text-decoration:none;opacity:.9}
 .pdfLink:hover{opacity:1}
 
 
-.selected{border:1px solid var(--border, rgba(255,255,255,.12));border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.03);margin:12px 0 12px;line-height:1.6}
+.selected{border:1px solid var(--color-border);border-radius:16px;padding:12px 14px;background:var(--color-surface);margin:12px 0 12px;line-height:1.6}
 .selectedLabel{margin:0 0 6px}
 .selectedHint{margin:0;opacity:.8}
 
@@ -95,7 +96,7 @@
   height:24px;
   padding:0 10px;
   border-radius:999px;
-  background:#111;
+  background:var(--color-text);
   color:#fff;
   font-size:12px;
   font-weight:800;
@@ -108,9 +109,9 @@
   height:24px;
   padding:0 10px;
   border-radius:999px;
-  background: rgba(0,0,0,.06);
-  color:#111;
-  border:1px solid rgba(0,0,0,.12);
+  background: var(--color-surface-2);
+  color:var(--color-text);
+  border:1px solid var(--color-border);
   font-size:12px;
   font-weight:800;
   white-space:nowrap;
@@ -126,10 +127,10 @@
   gap:12px;
   align-items:center;
   justify-content:space-between;
-  border: 1px dashed rgba(0,0,0,.12);
+  border: 1px dashed var(--color-border);
   border-radius:12px;
   padding:10px 12px;
-  background: rgba(0,0,0,.02);
+  background: var(--color-surface-2);
 }
 
 .selectionKey{
@@ -152,8 +153,8 @@
   font-weight: 700;
   padding: 8px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(0,0,0,.18);
-  background: #fff;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 .inputSmall{
@@ -161,8 +162,8 @@
   font-weight: 700;
   padding: 8px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(0,0,0,.18);
-  background: #fff;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   width: 260px;
   max-width: 100%;
 }
@@ -182,8 +183,8 @@
   margin-top:10px;
   padding:10px 12px;
   border-radius:12px;
-  border:1px solid rgba(0,0,0,.12);
-  background: rgba(255, 205, 0, .08);
+  border:1px solid var(--color-border);
+  background: var(--color-surface-2);
   font-size:13px;
 }
 
@@ -221,9 +222,9 @@
 
 
 /* ✅ 개인정보 안내/동의 박스 */
-.noticeBox{border:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.03);border-radius:12px;padding:12px;margin-top:6px}
-.noticeText{margin:0 0 10px;color:rgba(0,0,0,0.78);font-size:14px;line-height:1.4}
-.checkRow{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.35;color:rgba(0,0,0,0.85)}
+.noticeBox{border:1px solid var(--color-border);background:var(--color-surface-2);border-radius:12px;padding:12px;margin-top:6px}
+.noticeText{margin:0 0 10px;color:var(--color-muted);font-size:14px;line-height:1.4}
+.checkRow{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.35;color:var(--color-text)}
 .checkRow input{margin-top:3px;flex:0 0 auto}
 .checkRow a{text-decoration:underline;color:inherit}
 

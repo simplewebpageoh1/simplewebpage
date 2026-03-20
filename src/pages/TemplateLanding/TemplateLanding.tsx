@@ -1,17 +1,20 @@
 // src/pages/TemplateLanding/TemplateLanding.tsx
-// ✅ 유입(SEO) 목적의 템플릿 소개 페이지(/templates/:slug)
-// - 섹션별 옅은 회색 배경으로 구분을 명확하게
 
 import { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import Seo from "../../components/seo/Seo";
 import styles from "./TemplateLanding.module.scss";
 import { TEMPLATE_PAGES, PURCHASE_STEPS } from "../../data/templatePages/templatePages";
+import { getDemoPath, normalizeTheme } from "../../lib/theme";
 
 export default function TemplateLanding() {
   const { slug } = useParams();
   const page = useMemo(() => TEMPLATE_PAGES.find((p) => p.slug === slug), [slug]);
   if (!page) return null;
+
+  const defaultTheme = normalizeTheme("A");
+  const previewTo = getDemoPath(page.slug, defaultTheme);
+  const buyTo = `/checkout?template=${page.slug}&theme=${defaultTheme}`;
 
   return (
     <div className={styles.page}>
@@ -22,7 +25,6 @@ export default function TemplateLanding() {
           <h1 className={styles.title}>{page.heading}</h1>
           <p className={styles.subtitle}>{page.subheading}</p>
 
-          {/* ✅ 상단 핵심 정보 */}
           <div className={styles.sectionSoft}>
             <div className={styles.trustRow}>
               <span className={styles.trustBadge}>Fast response</span>
@@ -36,10 +38,10 @@ export default function TemplateLanding() {
             </div>
 
             <div className={styles.ctaRow}>
-              <Link className={styles.primaryBtn} to={`/contact?template=${page.slug}`}>
+              <Link className={styles.primaryBtn} to={buyTo}>
                 Buy / Get Started
               </Link>
-              <Link className={styles.secondaryBtn} to={`/demo/${page.slug}`}>
+              <Link className={styles.secondaryBtn} to={previewTo}>
                 Preview Demo
               </Link>
               <a className={styles.ghostBtn} href="/Domain-Hosting-Guide.pdf" target="_blank" rel="noreferrer">
@@ -48,7 +50,6 @@ export default function TemplateLanding() {
             </div>
           </div>
 
-          {/* ✅ Service area + Steps */}
           <div className={styles.sectionSoftAlt}>
             <div className={styles.card}>
               <h2 className={styles.h2}>Service area example</h2>
@@ -70,7 +71,6 @@ export default function TemplateLanding() {
             </div>
           </div>
 
-          {/* ✅ SEO lines + Who/Problem/Why + FAQ */}
           <div className={styles.sectionSoft}>
             <div className={styles.card}>
               <h2 className={styles.h2}>Quick SEO Overview</h2>

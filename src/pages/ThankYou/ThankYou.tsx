@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useMemo } from "react";
 import Seo from "../../components/seo/Seo";
+import { fullThemeLabel, normalizeTheme, templateLabel } from "../../lib/theme";
+import styles from "./ThankYou.module.scss";
 
 export default function ThankYou() {
   const location = useLocation();
@@ -10,7 +12,7 @@ export default function ThankYou() {
   );
 
   const template = params.get("template") ?? "";
-  const theme = (params.get("theme") ?? "A").toUpperCase();
+  const theme = normalizeTheme(params.get("theme"));
   const addons = params.get("addons") ?? "";
 
   const paid = (params.get("paid") ?? "").toLowerCase();
@@ -34,6 +36,15 @@ export default function ThankYou() {
     if (addons) u.searchParams.set("addons", addons);
     return u.pathname + u.search;
   }, [template, theme, addons]);
+
+
+
+  const selectionSummary = [
+    template ? `Template: ${templateLabel(template)}` : "",
+    theme ? `Theme: ${fullThemeLabel(theme)}` : "",
+  ]
+    .filter(Boolean)
+    .join(" | ");
 
   // ✅ 결제 직후(Stripe success)일 때만 Intake로 자동 이동
   // ✅ Intake 제출 후 ThankYou로 온 경우(from=intake)는 자동 이동 금지 (루프 방지)
@@ -72,59 +83,37 @@ export default function ThankYou() {
         path="/thank-you"
       />
 
-      <main style={{ padding: 48 }}>
+      <main className={styles.page}>
         <div className="container">
-          <h1>{headline}</h1>
-          <p style={{ marginTop: 12, opacity: 0.9, lineHeight: 1.6 }}>
+          <h1 className={styles.title}>{headline}</h1>
+          <p className={styles.intro}>
             {intro}
           </p>
 
+          {selectionSummary && (
+            <p className={styles.selection}>
+              <strong>{selectionSummary}</strong>
+            </p>
+          )}
+
           {!isPaid && !isFromContact && (
-            <div
-              style={{
-                marginTop: 16,
-                padding: 14,
-                borderRadius: 14,
-                border: "1px solid rgba(0,0,0,.08)",
-                background: "rgba(0,0,0,.03)",
-                lineHeight: 1.65,
-              }}
-            >
+            <div className={styles.notice}>
               If you haven&apos;t paid yet, please go to checkout from the
               Templates page.
             </div>
           )}
 
           {!isPaid && isFromContact && template && theme && (
-            <div style={{ marginTop: 14 }}>
-              <Link
-                to={checkoutUrl}
-                style={{
-                  display: "inline-block",
-                  padding: "8px 12px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(255,255,255,.18)",
-                  textDecoration: "none",
-                  opacity: 0.92,
-                }}
-              >
+            <div className={styles.inlineAction}>
+              <Link to={checkoutUrl}>
                 Or continue to secure checkout
               </Link>
             </div>
           )}
 
-          <div
-            style={{
-              marginTop: 16,
-              padding: 14,
-              borderRadius: 14,
-              border: "1px solid rgba(0,0,0,.08)",
-              background: "rgba(0,0,0,.03)",
-              lineHeight: 1.65,
-            }}
-          >
+          <div className={styles.nextBox}>
             <strong>What happens next?</strong>
-            <ul style={{ margin: "8px 0 0 18px" }}>
+            <ul>
               <li>
                 {isPaid
                   ? isFromIntake
@@ -143,56 +132,28 @@ export default function ThankYou() {
             </ul>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 12,
-              marginTop: 18,
-            }}
-          >
+          <div className={styles.actions}>
             {isPaid && (
-              <Link
-                to={intakeUrl}
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(255,255,255,.18)",
-                  textDecoration: "none",
-                }}
-              >
+              <Link to={intakeUrl} className={styles.btn}>
                 <strong>Open Setup Form</strong>
               </Link>
             )}
 
             <a
+              className={styles.btn}
               href="/Domain-Hosting-Guide.pdf"
               target="_blank"
               rel="noreferrer"
-              style={{
-                padding: "10px 14px",
-                borderRadius: 12,
-                border: "1px solid rgba(255,255,255,.18)",
-                textDecoration: "none",
-              }}
             >
               Open Domain &amp; Hosting Guide (PDF)
             </a>
 
-            <Link
-              to="/templates"
-              style={{
-                padding: "10px 14px",
-                borderRadius: 12,
-                border: "1px solid rgba(255,255,255,.18)",
-                textDecoration: "none",
-              }}
-            >
+            <Link to="/templates" className={styles.btn}>
               View Templates
             </Link>
           </div>
 
-          <div style={{ marginTop: 24, opacity: 0.9 }}>
+          <div className={styles.backHome}>
             <Link to="/">← Back to Home</Link>
           </div>
         </div>

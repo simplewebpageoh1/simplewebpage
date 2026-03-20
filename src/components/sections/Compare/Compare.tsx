@@ -1,6 +1,4 @@
 // src/components/sections/Compare/Compare.tsx
-// ✅ Compare 섹션
-// - 129불 원페이지 템플릿 컨셉에 맞게 문구 수정
 
 import styles from "./Compare.module.scss";
 
@@ -24,7 +22,7 @@ export default function Compare({
           <ul>
             <li>A clean, modern one-page website</li>
             <li>No monthly website builder fees</li>
-            <li>A simple setup process (template + guide)</li>
+            <li>A simple done-for-you setup process</li>
             <li>Clear contact path for customers</li>
           </ul>
 
@@ -33,8 +31,7 @@ export default function Compare({
               <h3>
                 Website builder platforms{" "}
                 <span style={{ fontWeight: "normal" }}>
-                  (Wix, GoDaddy, Squarespace, Weebly, Shopify, WordPress.com,
-                  Webflow)
+                  (Wix, GoDaddy, Squarespace, Weebly, Shopify, WordPress.com, Webflow)
                 </span>
               </h3>
               <ul>
@@ -49,14 +46,13 @@ export default function Compare({
               <ul>
                 <li>One-time price ($129 CAD)</li>
                 <li>Fast loading and mobile-friendly</li>
-                <li>Includes domain/hosting guide PDF</li>
+                <li>We build and publish it for you</li>
               </ul>
             </div>
           </div>
 
           <p className={styles.note}>
-            <strong>Not ideal for:</strong> large online stores or complex web
-            apps.
+            <strong>Not ideal for:</strong> large online stores or complex web apps.
           </p>
         </div>
       </div>

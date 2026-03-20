@@ -1,37 +1,88 @@
-// src/pages/Templates/Templates.tsx
-// ✅ 템플릿 목록(유입/탐색용)
-// - 업종(Industry) × 테마(Theme A/B/C)
-// - 초기에는 Electrician만 노출 (추후 업종 추가 예정)
-
 import Seo from "../../components/seo/Seo";
 import styles from "./Templates.module.scss";
 import { Link } from "react-router-dom";
 import { PURCHASE_STEPS } from "../../data/templatePages/templatePages";
 import { trackEvent } from "../../utils/analytics";
+import electricianHero from "../../assets/electrician/hero-light.png";
+import plumbingHero from "../../assets/plumbing/hero.png";
+import { ThemeId } from "../../lib/theme";
 
-const ELECTRICIAN = {
-  slug: "electrician",
-  title: "Electrician (One Page)",
-  desc: "One-page website template for electricians with 3 themes (A/B/C).",
-  themes: [
-    { id: "A", label: "A (Black&White)" },
-    { id: "B", label: "B (Dark Mode)" },
-    { id: "C", label: "C (Soft Pastel)" },
-  ] as const,
+type ThemeMeta = {
+  id: ThemeId;
+  label: string;
+  cardTone: "mono" | "dark" | "soft";
+  titleTop: string;
+  titleBottom: string;
 };
 
-
-const PLUMBING = {
-  slug: "plumbing",
-  title: "Plumbing (One Page)",
-  desc: "One-page website template for plumbers. Theme B is available now (A/C coming soon).",
-  themes: [
-    { id: "A", label: "A (Coming soon)", disabled: true },
-    { id: "B", label: "B (Available)", disabled: false },
-    { id: "C", label: "C (Coming soon)", disabled: true },
-  ] as const,
+type IndustryMeta = {
+  slug: "electrician" | "plumbing";
+  title: string;
+  image: string;
+  landingTo: string;
+  themes: ThemeMeta[];
 };
 
+const INDUSTRIES: IndustryMeta[] = [
+  {
+    slug: "electrician",
+    title: "Electrician",
+    image: electricianHero,
+    landingTo: "/templates/electrician",
+    themes: [
+      { id: "A", label: "Black & White", titleTop: "Black", titleBottom: "& White", cardTone: "mono" },
+      { id: "B", label: "Dark Premium", titleTop: "Dark", titleBottom: "Premium", cardTone: "dark" },
+      { id: "C", label: "Soft Clean", titleTop: "Soft", titleBottom: "Clean", cardTone: "soft" },
+    ],
+  },
+  {
+    slug: "plumbing",
+    title: "Plumbing",
+    image: plumbingHero,
+    landingTo: "/templates/plumbing",
+    themes: [
+      { id: "A", label: "Black & White", titleTop: "Black", titleBottom: "& White", cardTone: "mono" },
+      { id: "B", label: "Dark Premium", titleTop: "Dark", titleBottom: "Premium", cardTone: "dark" },
+      { id: "C", label: "Soft Clean", titleTop: "Soft", titleBottom: "Clean", cardTone: "soft" },
+    ],
+  },
+];
+
+function ThemePreviewCard({ industry, theme }: { industry: IndustryMeta; theme: ThemeMeta }) {
+  return (
+    <Link
+      className={`${styles.themeCard} ${styles[theme.cardTone]}`}
+      to={`/demo/${industry.slug}/${theme.id.toLowerCase()}`}
+      onClick={() =>
+        trackEvent("template_preview", {
+          industry: industry.slug,
+          theme: theme.id,
+          theme_name: theme.label,
+          location: "templates_thumb",
+        })
+      }
+    >
+      <div
+        className={styles.themeThumb}
+        aria-hidden="true"
+        style={{ ["--thumb-image" as string]: `url(${industry.image})` }}
+      >
+        <div className={styles.thumbPill}>Theme {theme.id}</div>
+        <div className={`${styles.thumbTitleWrap} ${styles[`title${theme.id}`]}`}>
+          <strong>
+            <span className={styles.titleTop}>{theme.titleTop}</span>
+            <span className={styles.titleBottom}>{theme.titleBottom}</span>
+          </strong>
+        </div>
+        <div className={styles.thumbSwatches} aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function Templates() {
   return (
@@ -46,116 +97,47 @@ export default function Templates() {
         <div className="container">
           <h1 className={styles.title}>Templates</h1>
           <p className={styles.subtitle}>
-            One-time price: <strong>$129 CAD</strong>. Choose an industry and then pick a
-            theme (A/B/C).
+            One-time price: <strong>$129 CAD</strong>. Choose an industry and then pick a theme (A/B/C).
           </p>
 
-          {/* ✅ 섹션 1: 템플릿(업종) + 테마(ABC) */}
           <div className={styles.sectionSoft}>
             <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Available</h2>
-              <p className={styles.sectionSub}>
-                Preview Theme A/B/C, then buy. (More industries will be added.)
-              </p>
+              <h2 className={styles.sectionTitle}>One Page Website Available</h2>
             </div>
 
             <div className={styles.grid}>
-              <div className={styles.card}>
-                <h3 className={styles.cardTitle}>{ELECTRICIAN.title}</h3>
-                <p className={styles.cardDesc}>{ELECTRICIAN.desc}</p>
-
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
-                  {ELECTRICIAN.themes.map((t) => (
+              {INDUSTRIES.map((industry) => (
+                <div key={industry.slug} className={styles.card}>
+                  <div className={styles.cardTop}>
+                    <h3 className={styles.cardTitle}>{industry.title}</h3>
                     <Link
-                      key={t.id}
-                      className={styles.action}
-                      to={`/demo/electrician/${t.id.toLowerCase()}`}
+                      className={`${styles.action} ${styles.buyAction}`}
+                      to={industry.landingTo}
                       onClick={() =>
-                        trackEvent("template_preview", {
-                          industry: ELECTRICIAN.slug,
-                          theme: t.id,
+                        trackEvent("template_buy_intent", {
+                          industry: industry.slug,
                           location: "templates_list",
                         })
                       }
                     >
-                      Preview {t.label}
+                      Buy ($129)
                     </Link>
-                  ))}
+                  </div>
 
-                  <Link
-                    className={`${styles.action} ${styles.buyAction}`}
-                    to={`/checkout?template=${ELECTRICIAN.slug}&theme=A`}
-                    onClick={() =>
-                      trackEvent("template_buy_intent", {
-                        industry: ELECTRICIAN.slug,
-                        location: "templates_list",
-                      })
-                    }
-                  >
-                    Buy ($129)
-                  </Link>
+                  <div className={styles.themeGrid}>
+                    {industry.themes.map((theme) => (
+                      <ThemePreviewCard
+                        key={`${industry.slug}-${theme.id}`}
+                        industry={industry}
+                        theme={theme}
+                      />
+                    ))}
+                  </div>
                 </div>
-
-                <div style={{ marginTop: 10, opacity: 0.9, lineHeight: 1.5 }}>
-                  Tip: Use the <b>Desktop</b>/<b>Mobile</b> buttons on the demo page to
-                  check both versions.
-                </div>
-              </div>
-
-              <div className={styles.card}>
-                <h3 className={styles.cardTitle}>{PLUMBING.title}</h3>
-                <p className={styles.cardDesc}>{PLUMBING.desc}</p>
-
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
-                  {PLUMBING.themes.map((t) =>
-                    t.disabled ? (
-                      <span
-                        key={t.id}
-                        className={`${styles.action} ${styles.disabledAction}`}
-                        aria-disabled="true"
-                      >
-                        Preview {t.label}
-                      </span>
-                    ) : (
-                      <Link
-                        key={t.id}
-                        className={styles.action}
-                        to={`/demo/plumbing/${t.id.toLowerCase()}`}
-                        onClick={() =>
-                          trackEvent("template_preview", {
-                            industry: PLUMBING.slug,
-                            theme: t.id,
-                            location: "templates_list",
-                          })
-                        }
-                      >
-                        Preview {t.label}
-                      </Link>
-                    ),
-                  )}
-                  <Link
-                    className={`${styles.action} ${styles.buyAction}`}
-                    to={`/checkout?template=${PLUMBING.slug}&theme=B`}
-                    onClick={() =>
-                      trackEvent("template_buy_intent", {
-                        industry: PLUMBING.slug,
-                        location: "templates_list",
-                      })
-                    }
-                  >
-                    Buy ($129)
-                  </Link>
-                </div>
-
-                <div style={{ marginTop: 10, opacity: 0.9, lineHeight: 1.5 }}>
-                  Theme A/C will be added later. You can preview <b>B</b> now.
-                </div>
-              </div>
-
+              ))}
             </div>
           </div>
 
-          {/* ✅ 섹션 2: 다른 업종 안내 */}
           <div className={styles.sectionSoftAlt}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Need a different industry?</h2>
@@ -173,7 +155,6 @@ export default function Templates() {
                 {[
                   "Cleaning",
                   "Handyman",
-                  "Plumbing",
                   "Painting",
                   "HVAC",
                   "Landscaping",
@@ -189,39 +170,16 @@ export default function Templates() {
               </div>
 
               <div className={styles.moreActions}>
-                <Link
-                  className={`${styles.action} ${styles.buyAction}`}
-                  to="/contact?from=nav"
-                  onClick={() => {
-                    try {
-                      localStorage.removeItem("demoOrderDraft:v1");
-                      sessionStorage.removeItem("orderFlow:fromDemo");
-                    } catch {
-                      // ignore
-                    }
-                  }}
-                >
+                <Link className={`${styles.action} ${styles.buyAction}`} to="/contact?from=nav">
                   Ask about your industry
                 </Link>
-                <Link
-                  className={styles.action}
-                  to="/contact?from=nav"
-                  onClick={() => {
-                    try {
-                      localStorage.removeItem("demoOrderDraft:v1");
-                      sessionStorage.removeItem("orderFlow:fromDemo");
-                    } catch {
-                      // ignore
-                    }
-                  }}
-                >
+                <Link className={styles.action} to="/contact?from=nav">
                   Contact us
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* ✅ 섹션 3: 진행 순서 */}
           <div className={styles.sectionSoft}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>How it works</h2>

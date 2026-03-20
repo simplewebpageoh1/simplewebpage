@@ -22,8 +22,10 @@ export default function Layout() {
   return (
     <>
       <Header />
-      {/* ✅ Outlet: Route 안에 들어가는 실제 페이지가 이 위치에 렌더링된다 */}
-      <Outlet />
+      <main>
+        {/* ✅ Outlet: Route 안에 들어가는 실제 페이지가 이 위치에 렌더링된다 */}
+        <Outlet />
+      </main>
       <Footer />
     </>
   );

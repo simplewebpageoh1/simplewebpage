@@ -48,7 +48,7 @@ export default function AppRouter() {
       {/* ✅ 데모(미리보기): 전기 템플릿(ABC) */}
       <Route path="/demo/electrician/:variant" element={<ElectricianDemo />} />
 
-      {/* ✅ 데모(미리보기): 플러밍 템플릿(현재 B만) */}
+      {/* ✅ 데모(미리보기): 플러밍 템플릿(ABC) */}
       <Route path="/demo/plumbing/:variant" element={<PlumbingDemo />} />
 
       {/* ✅ 기존 데모(구버전) */}

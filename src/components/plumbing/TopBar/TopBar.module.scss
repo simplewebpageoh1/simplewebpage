@@ -3,11 +3,11 @@
   top: 0;
   z-index: 30;
   backdrop-filter: blur(10px);
-  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
   border-bottom: 1px solid var(--border);
 }
 .inner{
-  height: 64px;
+  min-height: 68px;
   display:flex;
   align-items:center;
   justify-content: space-between;
@@ -27,13 +27,13 @@
 .btn{
   /* works together with global .btn styles */
   padding: 10px 14px;
-  border-radius: 999px;
+  border-radius: 12px;
   font-weight: 700;
   font-size: 13px;
   white-space: nowrap;
 }
-.tabs{display:flex; justify-content:center; gap:6px; padding:6px; border:1px solid var(--border); border-radius:999px; background: color-mix(in srgb, var(--bg2) 70%, transparent);}
-.tab{padding:8px 12px; border-radius:999px; font-weight:800; font-size:13px; color: var(--muted);}
+.tabs{display:flex; justify-content:center; gap:6px; padding:6px; border:1px solid var(--border); border-radius:12px; background: color-mix(in srgb, var(--bg2) 70%, transparent);}
+.tab{padding:8px 12px; border-radius:10px; font-weight:800; font-size:13px; color: var(--muted);}
 .active{background: var(--accentSoft); color: var(--text); border: 1px solid var(--border);}
 .buy{padding:10px 14px; font-size: 13px;}
 
@@ -100,14 +100,9 @@
   }
   .mobileBuyBtn{
     padding: 14px 16px;
-    border-radius: 999px;
+    border-radius: 12px;
     font-weight: 800;
+    box-shadow: 0 8px 20px rgba(16, 24, 40, 0.14);
   }
 }
 
-
-.disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  pointer-events: none;
-}
